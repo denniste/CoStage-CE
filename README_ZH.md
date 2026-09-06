@@ -39,17 +39,17 @@
 两种方式，均有文档：
 
 - **部署管理器（推荐）**——[`deploy/manager.js`](deploy/manager.js)，
-  零 npm 依赖，浏览器向导。见[部署手册](docs/deploy-zh.md)。
+  零 npm 依赖，浏览器向导。见[部署手册](guides/deploy-zh.md)。
 - **Docker Compose**——[`deploy/docker-compose.yml`](deploy/docker-compose.yml)
-  一键编排。见[部署手册](docs/deploy-zh.md)。
+  一键编排。见[部署手册](guides/deploy-zh.md)。
 
 ## 仓库结构
 
 | 路径 | 内容 |
 |---|---|
-| [`docs/`](docs) | 中英双语部署手册与功能说明 |
+| [`guides/`](guides) | 中英双语部署手册与功能说明 |
 | [`deploy/`](deploy) | 管理器、管理面板 UI、compose 编排、配置模板 |
-| [`site/`](site) | 静态项目站点（中 / EN）——同时经 GitHub Pages 发布 |
+| [`docs/`](docs) | 静态项目站点（中 / EN）——经 GitHub Pages 发布（本站即此目录） |
 
 ## 许可
 

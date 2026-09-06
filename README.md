@@ -44,17 +44,17 @@ Two ways, both documented:
 
 - **Deployment manager (recommended)** — [`deploy/manager.js`](deploy/manager.js),
   zero npm dependencies, browser wizard. See the
-  [deployment guide](docs/deploy-en.md).
+  [deployment guide](guides/deploy-en.md).
 - **Docker Compose** — [`deploy/docker-compose.yml`](deploy/docker-compose.yml)
-  one-command stack. See the [deployment guide](docs/deploy-en.md).
+  one-command stack. See the [deployment guide](guides/deploy-en.md).
 
 ## Repository layout
 
 | Path | Content |
 |---|---|
-| [`docs/`](docs) | Bilingual deployment guide & feature notes |
+| [`guides/`](guides) | Bilingual deployment guide & feature notes |
 | [`deploy/`](deploy) | Manager, dashboard UI, compose stack, config templates |
-| [`site/`](site) | Static project site (EN/中文) — also served via GitHub Pages |
+| [`docs/`](docs) | Static project site (EN/中文) — served via GitHub Pages from this folder |
 
 ## License
 
