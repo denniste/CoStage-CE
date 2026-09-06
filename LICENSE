@@ -1,0 +1,28 @@
+CoStage CE — Community Edition
+
+Copyright (c) 2026 CoStage authors. All rights reserved.
+
+This repository is NOT open source.
+
+It is published for distribution of compiled artifacts (binaries), deployment
+assets, documentation and the project website only. No source code is provided
+here, and no license is granted to use, copy, modify, merge, publish,
+distribute, sublicense, or sell any source code of CoStage.
+
+You may:
+  - download and run the compiled release artifacts attached to Releases;
+  - read, copy and redistribute the documentation in this repository;
+  - deploy the stack using the assets under deploy/ on your own machines.
+
+You may NOT:
+  - decompile, reverse engineer or disassemble the distributed binaries,
+    except where such restriction is prohibited by applicable law;
+  - represent the compiled artifacts as open-source software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

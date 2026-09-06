@@ -1,0 +1,78 @@
+# CoStage CE 一键编排（文档 07 §五）：livekit + zlmediakit + redis + coturn + 业务服务 + 转推 bot + web
+# 用法：cp .env.example .env（改 IP/密钥）→ docker compose up -d → 浏览器 http://<IP>/
+name: costage
+
+services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+
+  zlm:
+    image: zlmediakit/zlmediakit:master
+    restart: unless-stopped
+    volumes:
+      - ./configs/zlm.ini:/app/conf/config.ini:ro
+    ports:
+      - "8080:80"        # HTTP API / WHIP / WHEP 信令（调试用，可不对公网开放；面板经 server 同源反代）
+      - "8100:8100/udp"  # WebRTC 媒体
+      - "8100:8100/tcp"
+
+  livekit:
+    image: livekit/livekit-server:v1.13.6
+    restart: unless-stopped
+    command: --config /etc/livekit.yaml
+    environment:
+      - LIVEKIT_SECRET=${LIVEKIT_SECRET}
+    volumes:
+      - ./configs/livekit.yaml:/etc/livekit.yaml:ro
+    ports:
+      - "7880:7880"          # 信令 WS（浏览器直连，COSTAGE_LIVEKIT_URL 指向这里）
+      - "7881:7881/tcp"      # RTC over TCP
+      - "50000-50100:50000-50100/udp"
+
+  coturn:
+    image: coturn/coturn:latest
+    restart: unless-stopped
+    network_mode: host       # TURN 需要宿主网络栈（可选：纯同网段使用可整段删除）
+    command: >
+      -n --realm=costage --listening-port=3478
+      --fingerprint --lt-cred-mech --user costage:${TURN_PASSWORD:-turnpass}
+
+  server:
+    build:
+      context: ..
+      dockerfile: deploy/server.Dockerfile
+    restart: unless-stopped
+    environment:
+      - COSTAGE_ADDR=:80
+      - COSTAGE_LIVEKIT_URL=${COSTAGE_LIVEKIT_URL}      # 浏览器视角的信令地址（签进 token）
+      - COSTAGE_LIVEKIT_API_URL=http://livekit:7880     # 服务端管理 API（容器内网）
+      - COSTAGE_LIVEKIT_KEY=devkey
+      - COSTAGE_LIVEKIT_SECRET=${LIVEKIT_SECRET}
+      - COSTAGE_REDIS_ADDR=redis:6379
+      - COSTAGE_ZLM_PROXY=http://zlm:80                 # 面板同源 WHEP/WHIP/API 反代目标
+    depends_on:
+      - redis
+      - livekit
+      - zlm
+    ports:
+      - "80:80"
+
+  relaybot:
+    build:
+      context: ..
+      dockerfile: deploy/server.Dockerfile
+    restart: unless-stopped
+    entrypoint: ["/app/relaybot"]
+    environment:
+      - LK_URL=ws://livekit:7880
+      - LK_KEY=devkey
+      - LK_SECRET=${LIVEKIT_SECRET}
+      - ZLM_WHIP=http://zlm:80/index/api/whip
+      - ZLM_API=http://zlm:80
+      - ZLM_SECRET=${ZLM_SECRET}
+      - ICE_URLS=
+    depends_on:
+      - livekit
+      - zlm
+

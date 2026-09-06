@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CoStage 部署管理器</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <b>CoStage 部署管理器</b>
+  <span id="verBox" class="muted"></span>
+  <span class="spacer"></span>
+  <span id="authBox"></span>
+</header>
+
+<main>
+  <!-- 登录视图 -->
+  <section id="view-login" class="card hidden">
+    <h2>管理口令</h2>
+    <p class="muted">本管理器设置了访问口令，请输入后继续。</p>
+    <input type="password" id="loginPw" placeholder="管理口令">
+    <button id="btnLogin">进入</button>
+    <p id="loginErr" class="err"></p>
+  </section>
+
+  <!-- 向导视图 -->
+  <section id="view-wizard" class="hidden">
+    <ol id="stepNav" class="steps"></ol>
+    <div id="stepBody" class="card"></div>
+    <div class="nav-btns">
+      <button id="btnPrev" class="ghost">上一步</button>
+      <button id="btnNext">下一步</button>
+    </div>
+  </section>
+
+  <!-- 仪表盘视图 -->
+  <section id="view-dash" class="hidden">
+    <div class="row">
+      <h2>服务状态</h2>
+      <span class="spacer"></span>
+      <button class="ghost" onclick="refreshStatus()">刷新</button>
+      <button class="ghost" onclick="stackOp('restart')">重启整机</button>
+      <button class="ghost" onclick="reinstall()">重新安装</button>
+      <button class="danger" onclick="stackOp('stop')">停止整机</button>
+      <button class="danger" onclick="uninstall()">卸载</button>
+    </div>
+    <div id="svcGrid" class="svc-grid"></div>
+
+    <div class="card">
+      <div class="row">
+        <h2>日志</h2>
+        <select id="logSvc">
+          <option value="">全部服务</option>
+          <option value="server">server</option>
+          <option value="relaybot">relaybot</option>
+          <option value="zlm">zlm</option>
+          <option value="livekit">livekit</option>
+          <option value="redis">redis</option>
+          <option value="coturn">coturn</option>
+        </select>
+        <button class="ghost" id="btnLogFollow">开始跟随</button>
+        <span id="logState" class="muted"></span>
+      </div>
+      <pre id="logBox" class="logbox"></pre>
+    </div>
+
+    <div class="card">
+      <div class="row"><h2>升级</h2>
+        <span class="spacer"></span>
+        <button class="ghost" onclick="updateCheck()">检查新版本</button>
+      </div>
+      <div id="updateInfo" class="muted">点击「检查新版本」（--repo 未配置时不可用，可走离线升级：把发布 tar 放入 incoming/ 目录）。</div>
+      <div class="row">
+        <input id="offlineTar" placeholder="incoming/ 中的 tar 文件名" style="flex:1;min-width:0">
+        <button class="ghost" onclick="upgradeOffline()">离线升级</button>
+      </div>
+      <div id="rollbackBox" class="row"></div>
+    </div>
+  </section>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

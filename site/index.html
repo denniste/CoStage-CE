@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CoStage — Realtime Interactive Live & Collaboration Foundation</title>
+<meta name="description" content="Open-architecture realtime live foundation: LiveKit SFU interaction plane, ZLMediaKit WHEP mass distribution, zero-transcoding relay, collaborative whiteboard, and a web deployment manager.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%233b5bd6'/%3E%3Cpath d='M9 11l7 5 7-5M9 21l7-5 7 5' stroke='%23fff' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="bg-grid" aria-hidden="true"></div>
+
+<header class="nav">
+  <a class="brand" href="#top">
+    <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#3b5bd6"/><path d="M9 11l7 5 7-5M9 21l7-5 7 5" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>Co<b>Stage</b></span>
+  </a>
+  <nav class="nav-links">
+    <a href="#features" data-i18n="nav.features">Features</a>
+    <a href="#architecture" data-i18n="nav.architecture">Architecture</a>
+    <a href="#deploy" data-i18n="nav.deploy">Deploy</a>
+    <a href="#usecases" data-i18n="nav.usecases">Use cases</a>
+  </nav>
+  <button id="langToggle" class="lang-btn" title="Switch language">中文</button>
+</header>
+
+<main id="top">
+
+  <!-- ===== Hero ===== -->
+  <section class="hero">
+    <span class="badge mono">CE v0.1 · self-host</span>
+    <h1 data-i18n="hero.title">Realtime classrooms.<br>Live to everyone. <em>One foundation.</em></h1>
+    <p class="hero-sub" data-i18n="hero.sub">
+      An open-architecture realtime live, mic-interaction and collaboration foundation.
+      LiveKit SFU powers the interactive plane, ZLMediaKit WHEP carries mass distribution,
+      a relay bot moves every track with zero transcoding — and the whiteboard never leaves the data plane.
+    </p>
+    <div class="hero-cta">
+      <a class="btn primary" href="#deploy" data-i18n="hero.cta1">Quick start</a>
+      <a class="btn ghost" href="#architecture" data-i18n="hero.cta2">See the architecture</a>
+    </div>
+    <div class="hero-chips mono">
+      <span>≤4 on-mic</span><span>unlimited viewers</span><span>sub-second WHEP</span><span>0 transcoding</span><span>1-binary manager</span>
+    </div>
+  </section>
+
+  <!-- ===== Features ===== -->
+  <section id="features" class="section">
+    <h2 class="sec-title" data-i18n="features.title">Everything a live session needs</h2>
+    <p class="sec-sub" data-i18n="features.sub">Battle-tested through real classrooms — mic management, distribution, whiteboard and resilience in one stack.</p>
+    <div class="grid" id="featureGrid"></div>
+  </section>
+
+  <!-- ===== Architecture ===== -->
+  <section id="architecture" class="section">
+    <h2 class="sec-title" data-i18n="arch.title">Three planes, one deployment</h2>
+    <p class="sec-sub" data-i18n="arch.sub">Interaction on a LiveKit SFU, mass viewing on ZLMediaKit WHEP, coordination on WebSocket &amp; data channels — media never touches the data plane.</p>
+    <div class="arch" id="archDiagram"></div>
+    <div class="arch-legend mono" id="archLegend"></div>
+  </section>
+
+  <!-- ===== Deploy ===== -->
+  <section id="deploy" class="section">
+    <h2 class="sec-title" data-i18n="deploy.title">Deploy in an afternoon</h2>
+    <p class="sec-sub" data-i18n="deploy.sub">One Linux host, Docker optional — the deployment manager ships inside the release and walks you through network, secrets and health checks in the browser.</p>
+    <div class="deploy-grid">
+      <div class="deploy-steps" id="deploySteps"></div>
+      <div class="terminal mono" id="deployTerm"></div>
+    </div>
+    <div class="ports-wrap">
+      <h3 class="mono" data-i18n="deploy.portsTitle">Ports</h3>
+      <table class="ports mono" id="portsTable"></table>
+    </div>
+  </section>
+
+  <!-- ===== Use cases ===== -->
+  <section id="usecases" class="section">
+    <h2 class="sec-title" data-i18n="usecases.title">Built for real sessions</h2>
+    <div class="grid" id="usecaseGrid"></div>
+  </section>
+
+  <!-- ===== CTA ===== -->
+  <section class="cta-band">
+    <h2 data-i18n="cta.title">Your classroom is one wizard away.</h2>
+    <p data-i18n="cta.sub">Download the CE release, run the manager, open the panel. Teach.</p>
+    <a class="btn primary" href="#deploy" data-i18n="cta.btn">Get started</a>
+  </section>
+
+</main>
+
+<footer class="footer mono">
+  <span>CoStage CE v0.1</span>
+  <span data-i18n="footer.note">Shipped as compiled artifacts · self-hosted · no telemetry</span>
+  <span class="spacer"></span>
+  <button id="langToggle2" class="lang-btn">中文</button>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>

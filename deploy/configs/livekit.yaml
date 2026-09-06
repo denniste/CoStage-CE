@@ -1,0 +1,12 @@
+# LiveKit（CE 单机；${LIVEKIT_SECRET} 由 docker-compose 注入）
+port: 7880
+bind_addresses:
+  - "::"
+rtc:
+  tcp_port: 7881
+  port_range_start: 50000
+  port_range_end: 50100
+  # 公网/严格 NAT 部署改 true（经 STUN 探测外部 IP），纯 LAN 保持 false
+  use_external_ip: false
+keys:
+  devkey: ${LIVEKIT_SECRET}

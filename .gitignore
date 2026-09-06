@@ -1,0 +1,18 @@
+# Binaries and release artifacts never enter git — they live in GitHub Releases.
+*.tar.gz
+*.zip
+bin/
+releases/
+
+# Runtime state
+run/
+logs/
+configs/config.ini
+configs/livekit.yaml
+params.json
+.env
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
