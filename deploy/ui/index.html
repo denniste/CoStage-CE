@@ -24,44 +24,87 @@
     <p id="loginErr" class="err"></p>
   </section>
 
-  <!-- 向导视图 -->
-  <section id="view-wizard" class="hidden">
-    <ol id="stepNav" class="steps"></ol>
-    <div id="stepBody" class="card"></div>
-    <div class="nav-btns">
-      <button id="btnPrev" class="ghost">上一步</button>
-      <button id="btnNext">下一步</button>
-    </div>
-  </section>
-
-  <!-- 仪表盘视图 -->
+  <!-- 仪表盘视图（模块化：状态 / 配置 / 日志 / 升级） -->
   <section id="view-dash" class="hidden">
     <div class="row">
       <h2>服务状态</h2>
       <span class="spacer"></span>
       <button class="ghost" onclick="refreshStatus()">刷新</button>
+      <button class="ghost" onclick="stackOp('start')">启动整机</button>
       <button class="ghost" onclick="stackOp('restart')">重启整机</button>
       <button class="ghost" onclick="reinstall()">重新安装</button>
       <button class="danger" onclick="stackOp('stop')">停止整机</button>
       <button class="danger" onclick="uninstall()">卸载</button>
     </div>
-    <div id="svcGrid" class="svc-grid"></div>
+    <div id="svcList"></div>
+
+    <div class="card">
+      <div class="row"><h2>配置</h2>
+        <span class="spacer"></span>
+        <button class="ghost" onclick="loadConfig()">还原</button>
+        <button onclick="saveConfig()">保存配置</button>
+      </div>
+      <label for="f_publicIp">对外地址（IP 或域名）</label>
+      <input id="f_publicIp" placeholder="学生浏览器必须可达">
+      <p class="hint">ZLM 候选地址与 LiveKit 信令地址都依赖它。</p>
+      <label for="f_liveKitKey">LiveKit API Key</label>
+      <input id="f_liveKitKey">
+      <label for="f_liveKitSecret">LiveKit API Secret</label>
+      <input id="f_liveKitSecret">
+      <button class="ghost small" onclick="regen('lkSecret')">重新生成 Secret</button>
+      <label for="f_zlmSecret">ZLM API Secret</label>
+      <input id="f_zlmSecret">
+      <button class="ghost small" onclick="regen('zlmSecret')">重新生成 Secret</button>
+      <label for="f_holdSeconds">断线保护（秒）</label>
+      <input id="f_holdSeconds" type="number" min="0">
+      <p class="hint">参与者断线后席位保留时长。</p>
+      <label><input type="checkbox" id="f_devAuth"> DEV 鉴权模式（dev）</label>
+      <p class="hint">DEV 模式下身份由请求显式提供（无真实鉴权）——生产接入业务系统后再关闭。</p>
+      <label><input type="checkbox" id="f_turnOn"> 启用 TURN 服务（可选）</label>
+      <p class="hint">仅跨网段/严格 NAT 时需要；当前版本仅作用于服务端转推链路。</p>
+      <div id="turnBody"></div>
+      <label for="f_domain">域名/子域名（可选）</label>
+      <input id="f_domain" placeholder="如 costage.example.com；留空 = IP 直连模式">
+      <p class="hint">设置后由 nginx 接管 80/443 入口（见「nginx 站点」模块）；LiveKit 信令走 wss://域名/lk，ZLM 候选地址改用域名。</p>
+      <label><input type="checkbox" id="f_tls"> 启用 TLS（443）</label>
+      <div id="tlsBody"></div>
+      <p class="hint">Secret 留空 = 保持原值；各服务端口在服务状态模块内单独修改保存。</p>
+      <details style="margin-top:12px">
+        <summary class="muted">高级：原始配置（config.ini / livekit.yaml）</summary>
+        <div class="tabs" style="margin-top:8px">
+          <button class="tab active" id="rawTabZlm" onclick="switchRaw('config.ini')">config.ini（zlm）</button>
+          <button class="tab" id="rawTabLk" onclick="switchRaw('livekit.yaml')">livekit.yaml（livekit）</button>
+        </div>
+        <textarea id="rawConf" class="codebox" spellcheck="false"></textarea>
+        <div class="row" style="margin-top:8px">
+          <span class="hint">注意：保存「配置」模块会按参数重新渲染并覆盖对应文件。</span>
+          <span class="spacer"></span>
+          <button class="ghost" onclick="loadRaw()">重载</button>
+          <button onclick="saveRaw()">保存并重启服务</button>
+        </div>
+      </details>
+    </div>
+
+    <div class="card" id="ngCard">
+      <div class="row"><h2>nginx 站点</h2>
+        <span class="spacer"></span>
+        <button class="ghost" onclick="renderNginxTpl()">重新渲染</button>
+        <button onclick="applyNginx()">校验并应用</button>
+        <button class="danger" onclick="removeNginx()">停用站点</button>
+      </div>
+      <div id="ngState" class="muted" style="margin-bottom:6px"></div>
+      <textarea id="ngConf" class="codebox" spellcheck="false"></textarea>
+      <p class="hint">应用前自动 nginx -t，失败自动回滚；仅接管带 costage-manager 标记的配置文件。</p>
+    </div>
 
     <div class="card">
       <div class="row">
         <h2>日志</h2>
-        <select id="logSvc">
-          <option value="">全部服务</option>
-          <option value="server">server</option>
-          <option value="relaybot">relaybot</option>
-          <option value="zlm">zlm</option>
-          <option value="livekit">livekit</option>
-          <option value="redis">redis</option>
-          <option value="coturn">coturn</option>
-        </select>
+        <span class="spacer"></span>
         <button class="ghost" id="btnLogFollow">开始跟随</button>
         <span id="logState" class="muted"></span>
       </div>
+      <div id="logTabs" class="tabs"></div>
       <pre id="logBox" class="logbox"></pre>
     </div>
 
@@ -70,8 +113,13 @@
         <span class="spacer"></span>
         <button class="ghost" onclick="updateCheck()">检查新版本</button>
       </div>
-      <div id="updateInfo" class="muted">点击「检查新版本」（--repo 未配置时不可用，可走离线升级：把发布 tar 放入 incoming/ 目录）。</div>
-      <div class="row">
+      <div id="updateInfo" class="muted">安装源：github.com/denniste/CoStage-CE 最新 release</div>
+      <div class="row" style="margin-top:6px">
+        <button class="ghost" onclick="updateCheck()">检查新版本</button>
+        <button onclick="releaseInstall()">下载并安装/更新</button>
+      </div>
+      <div id="relProg" class="muted" style="margin-top:6px"></div>
+      <div class="row" style="margin-top:6px">
         <input id="offlineTar" placeholder="incoming/ 中的 tar 文件名" style="flex:1;min-width:0">
         <button class="ghost" onclick="upgradeOffline()">离线升级</button>
       </div>
