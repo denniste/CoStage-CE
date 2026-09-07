@@ -1,4 +1,4 @@
-# CoStage CE (Community Edition) v0.1
+# CoStage CE (Community Edition) v0.1.1
 
 A general-purpose realtime live/interactive/collaboration foundation — first scenario: online tutoring classrooms. Single-host Docker deployment.
 
@@ -21,14 +21,17 @@ One class session looks like this: **1 teacher (host) + up to 4 students (mic pa
 - Mic whitelist: editable in-page by the host; whitelisted students hold participant status (may request the mic)
 - Distribution: per-track relay from SFU to ZLMediaKit; audience pulls native WebRTC (WHEP), zero transcoding
 
-## Known limitations (v0.1)
+## Known limitations (v0.1.1)
 
-1. No access control: anyone with the room ID can watch (signed URLs / viewing codes / Webhook admission come in a later release)
-2. No recording / playback
-3. Per-participant whiteboard "deny drawing + one-click cleanup" not included
-4. Paid speaking (speak) postponed
-5. Single-host deployment assumption (no clustering)
-6. Bring your own TLS for production (nginx 443 or an outer gateway)
+1. **At most 1 active room at a time** (server-side hard gate): end the current room before starting a new class
+2. No access control: anyone with the room ID can watch (signed URLs / viewing codes / Webhook admission come in a later release)
+3. No recording / playback
+4. Per-participant whiteboard "deny drawing + one-click cleanup" not included
+5. Paid speaking (speak) postponed
+6. Single-host deployment assumption (no clustering)
+7. Bring your own TLS for production (nginx 443 or an outer gateway)
+
+> Beyond "1 active room" and "no recording/playback", CE is functionally identical to the full edition; future features will not be trimmed from CE.
 
 ## Quick start
 

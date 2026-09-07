@@ -1,6 +1,6 @@
 # CoStage CE
 
-**Realtime interactive live & collaboration foundation — Community Edition v0.1**
+**Realtime interactive live & collaboration foundation — Community Edition v0.1.1**
 
 An open-architecture realtime live, mic-interaction and collaboration foundation
 (first scenario: online tutoring classrooms). One host, up to 4 on-mic participants,
@@ -17,7 +17,7 @@ unlimited viewers — self-hosted on a single Linux box.
 - **Viewers / anonymous** open the room link and watch instantly — a live mirror of the
   host's layout with sub-second WHEP streams, read-only whiteboard, and text chat.
 
-## Highlights (v0.1)
+## Highlights (v0.1.1)
 
 - LiveKit SFU interaction plane + ZLMediaKit WHEP mass distribution, **zero transcoding**
   (per-identity WHIP relay, H264/opus passthrough)
@@ -29,14 +29,19 @@ unlimited viewers — self-hosted on a single Linux box.
 - Web deployment manager: install wizard, lifecycle, upgrade, rollback — no systemd,
   no container runtime required
 
-## Known boundaries (v0.1)
+## Known boundaries (v0.1.1)
 
-1. No access gate — anyone with the room number can watch (signed URLs / watch codes
+1. **At most 1 active room at a time** (server-side hard gate): end the current room
+   before starting a new class
+2. No access gate — anyone with the room number can watch (signed URLs / watch codes
    land in a later release)
-2. No recording or playback
-3. Host-side per-participant whiteboard deny & clear: not included
-4. Paid-speech ("speak") feature: postponed
-5. Single-machine deployment assumption
+3. No recording or playback
+4. Host-side per-participant whiteboard deny & clear: not included
+5. Paid-speech ("speak") feature: postponed
+6. Single-machine deployment assumption
+
+> Beyond "1 active room" and "no recording/playback", CE is functionally identical to
+> the full edition; future features will not be trimmed from CE.
 
 ## Deploy
 
