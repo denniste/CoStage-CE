@@ -16,3 +16,8 @@ params.json
 .DS_Store
 Thumbs.db
 *.swp
+
+# demo 业务系统运行时产物
+demo/.venv/
+demo/db.sqlite3*
+demo/**/__pycache__/
