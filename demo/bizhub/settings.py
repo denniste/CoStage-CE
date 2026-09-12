@@ -11,7 +11,8 @@ SECRET_KEY = "demo-only-secret-key-change-me-in-production"
 DEBUG = True
 # 192.168.31.2 = Windows nginx 7443 反代（mall.conf，HTTPS 终结后回环到 7990）
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "192.168.31.2"]
-CSRF_TRUSTED_ORIGINS = ["https://192.168.31.2:7443"]
+# 商城入口 https://192.168.31.2:82（Windows nginx 反代 7990）；生产=shop.example.com
+CSRF_TRUSTED_ORIGINS = ["https://192.168.31.2:82"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -69,6 +70,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 COSTAGE_AUTHZ_SECRET = "demo-bizhub-authz-secret"   # = CoStage COSTAGE_AUTHZ_SECRET
 COSTAGE_SERVICE_TOKEN = "demo-bizhub-service-token" # = CoStage COSTAGE_SERVICE_TOKEN
 COSTAGE_BASE_URL = "http://127.0.0.1:7860"          # CoStage 业务入口（服务端调用）
-COSTAGE_ENTRY_URL = "https://192.168.31.2"          # CoStage 浏览器入口（店员换票跳转）
+COSTAGE_ENTRY_URL = "https://192.168.31.2"          # CoStage 独立浏览器入口（443；生产=live.example.com）
 COSTAGE_TRUSTED_SECRET = "demo-bizhub-trusted-secret"  # = CoStage COSTAGE_TRUSTED_SECRET（换票 HMAC）
 COSTAGE_TS_TOLERANCE = 300                          # 决策时间戳容忍窗（秒）

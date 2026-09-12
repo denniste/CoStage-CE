@@ -1,8 +1,8 @@
 """CoStage 决策端点（Phase 2 接入面，契约见 docs/costage-biz-integration.md §3）。
 
 超市的直播规则：店员/经理可开播卖货；顾客与访客只可观看；连麦仅限员工间操作。
-userId 映射：CoStage local 模式=本地 uid；trusted 模式=x-trusted-<超市用户 id>——
-两种形态都解析到超市 User，按 Profile.role 裁决。
+userId 映射：同步/换票统一 external_id 前缀 mall-<超市用户 id>（x-trusted- 存量兼容），
+按 Profile.role 裁决。
 """
 import hashlib
 import hmac
@@ -42,9 +42,10 @@ def verify_signature(timestamp: str, body: bytes, signature: str) -> None:
 
 
 def resolve_user(cstg_user_id: str):
-    """CoStage userId → 超市用户。trusted 形态 x-trusted-<id> 优先，其次本地数字 uid。"""
-    if cstg_user_id.startswith("x-trusted-"):
-        return User.objects.filter(pk=cstg_user_id[len("x-trusted-"):]).first()
+    """CoStage userId → 超市用户。同步/换票统一前缀 mall-<id>；x-trusted-<id> 为存量兼容。"""
+    for prefix in ("mall-", "x-trusted-"):
+        if cstg_user_id.startswith(prefix):
+            return User.objects.filter(pk=cstg_user_id[len(prefix):]).first()
     return User.objects.filter(pk=cstg_user_id, profile__role__in=(
         Profile.Role.STAFF, Profile.Role.MANAGER, Profile.Role.CUSTOMER)).first()
 

@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 
+from . import live
 from .models import Profile
 
 
@@ -29,6 +30,7 @@ def register(request):
         else:
             user = User.objects.create_user(username=username, password=password)
             Profile.objects.create(user=user, role=Profile.Role.CUSTOMER, phone=phone)
+            live.sync_user(user, username, "guest", False)  # Mode 1：同步 CoStage（无直播权限；失败容忍）
             login(request, user)
             messages.success(request, f"欢迎加入惠民超市，{username}！")
             return redirect("home")

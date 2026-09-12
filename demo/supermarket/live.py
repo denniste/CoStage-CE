@@ -31,7 +31,7 @@ def _sign(user_id: str, role: str, ts: str, nonce: str) -> str:
 
 def staff_start_live(staff_user, display_name: str) -> str:
     """为店员换 CoStage 会话，返回落地 URL（含 #sso 票证交接段）。"""
-    user_id = f"x-trusted-{staff_user.id}"
+    user_id = f"mall-{staff_user.id}"
     ts = str(int(time.time()))
     nonce = uuid.uuid4().hex
     body = {
@@ -62,8 +62,36 @@ def staff_start_live(staff_user, display_name: str) -> str:
     return entry + "/" + frag
 
 
+def sync_user(biz_user, display_name: str, role: str, can_live: bool) -> None:
+    """业务用户 → CoStage 同步（Mode 1：api_key 管理面，PUT users/{externalID}）。
+
+    顾客注册/员工建档时调用；CoStage 不可达只记日志不阻塞业务主流程。
+    external_id 统一前缀 mall-<业务用户id>（与换票 userId 同源，避免两套并存）。
+    """
+    body = {
+        "username": biz_user.username,
+        "displayName": display_name,
+        "role": "teacher" if can_live else "guest",
+        "canLive": can_live,
+    }
+    try:
+        resp = requests.put(
+            f"{settings.COSTAGE_BASE_URL}/api/v1/service/users/mall-{biz_user.id}",
+            json=body,
+            headers={"X-CoStage-Service-Token": settings.COSTAGE_SERVICE_TOKEN},
+            timeout=5,
+        )
+    except requests.RequestException as e:
+        log.warning("[sync] CoStage 不可达，用户 %s 未同步（容忍）: %s", biz_user.username, e)
+        return
+    if resp.status_code != 200:
+        log.warning("[sync] 同步 %s 失败 %d: %s", biz_user.username, resp.status_code, resp.text[:200])
+        return
+    log.info("[sync] 用户 %s 已同步（canLive=%s）", biz_user.username, can_live)
+
+
 def list_live_rooms():
-    """直播中的员工房（hostId=x-trusted-*）。CoStage 不可达返回空（条隐藏）。"""
+    """直播中的员工房（hostId=mall-*）。CoStage 不可达返回空（条隐藏）。"""
     try:
         resp = requests.get(settings.COSTAGE_BASE_URL + "/api/rooms", timeout=3)
     except requests.RequestException:
@@ -72,4 +100,4 @@ def list_live_rooms():
         return []
     rooms = resp.json().get("rooms", [])
     return [r for r in rooms
-            if str(r.get("hostId", "")).startswith("x-trusted-") and r.get("state") == "live"]
+            if str(r.get("hostId", "")).startswith("mall-") and r.get("state") == "live"]

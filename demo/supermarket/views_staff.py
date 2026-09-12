@@ -186,6 +186,7 @@ def staff_list(request):
             with transaction.atomic():
                 u = User.objects.create_user(username=username, password=password)
                 Profile.objects.create(user=u, role=role)
+            live.sync_user(u, username, "teacher", True)  # Mode 1：同步 CoStage（有直播权限；失败容忍）
             messages.success(request, f"员工已建档：{username}（{role}）")
         return redirect("staff_list")
     staff = Profile.objects.filter(role__in=(Profile.Role.STAFF, Profile.Role.MANAGER)) \
