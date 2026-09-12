@@ -171,3 +171,7 @@ CoStage 带第 2 节 env 重启。种子映射：admin(uid=1)=教师、user01-04
 - **shadow 日志**：CoStage 以 `[authz][shadow]` 前缀记录每次"本应拦截"的询问。
 - **用户映射**：trusted 模式下 CoStage 自动开户 `x-trusted-<业务userId>`；
   决策请求的 `userId` 即该值，业务系统直接按自有 userId 裁决，无需查表翻译。
+- **已知缺口（P1 建议）**：撤权是单向的——`scope=all` 落的戳（默认 TTL 24h）没有
+  解除接口，业务侧"解除封禁"后该用户仍会 403 REVOKED 到戳过期为止（重新登录无效，
+  戳按 userId 而非票校验）。生产接入建议：P1 增加 un-revoke 端点，或把戳 TTL 与业务
+  封禁审核周期对齐调短（`RevokeUser` 的 ttl 参数已可配）。

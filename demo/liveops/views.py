@@ -114,7 +114,7 @@ def _handle_action(request):
     elif op == "unban":
         u.status = BizUser.Status.ACTIVE
         u.save()
-        messages.success(request, f"{u.username} 已恢复（注意：撤权戳仍在其 TTL 内，登出重登后完全恢复）")
+        messages.success(request, f"{u.username} 已恢复本地规则；注意：若此前 scope=all 撤权，CoStage 撤权戳仍在其 TTL（默认 24h）内，期间该用户仍 403 REVOKED——重新登录不解戳")
     elif op == "revoke_watch":
         ok, detail = services.revoke(u.cstg_uid, "watch", reason="业务踢出观看")
         messages.success(request, f"{u.username} watch 撤权：{detail}") if ok else messages.error(
