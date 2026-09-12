@@ -9,7 +9,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "demo-only-secret-key-change-me-in-production"
 DEBUG = True
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+# 192.168.31.2 = Windows nginx 7443 反代（mall.conf，HTTPS 终结后回环到 7990）
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "192.168.31.2"]
+CSRF_TRUSTED_ORIGINS = ["https://192.168.31.2:7443"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",

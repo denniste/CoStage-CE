@@ -12,6 +12,10 @@ Phase 1 = 超市本体（独立运行，不依赖 CoStage）；Phase 2 = 接入 
 ./run.sh    # venv + 依赖 + 迁移 + 种子 + runserver 127.0.0.1:7990
 ```
 
+**访问入口**：本机 http://127.0.0.1:7990/ ；局域网 **https://192.168.31.2:7443/**
+（Windows nginx `mall.conf` 反代 7443→7990，HTTPS 全链；CSRF 受信 origin 已在
+settings 配齐。7443 选型：443=CoStage、8443=ZLM sslport 禁用）
+
 ## 账号（种子见 seed_demo.py）
 
 | 角色 | 账号 | 口令 | 说明 |
