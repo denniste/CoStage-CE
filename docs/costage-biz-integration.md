@@ -177,7 +177,30 @@ CoStage 带第 2 节 env 重启。种子映射：admin(uid=1)=教师、user01-04
   戳按 userId 而非票校验）。生产接入建议：P1 增加 un-revoke 端点，或把戳 TTL 与业务
   封禁审核周期对齐调短（`RevokeUser` 的 ttl 参数已可配）。
 
-## 8. 惠民超市实战（demo/，方案 A：trusted 换票）
+## 8. 惠民超市实战（demo/，Mode 1：独立应用 + 用户同步 + JWT 跳转）
+
+> 集成形态定稿（2026-09-12）：CoStage 是**独立完整的直播应用**，自带 SPA 独立入口
+> （生产=live.example.com 一类独立域名/vhost），业务系统**不承载、不改写、不代理**
+> CoStage 的任何页面。集成只走三件事：①api_key 管理面同步用户；②决策端点裁决；
+> ③需要直播时换 JWT 跳转到 CoStage 入口。前端的深度定制路线见
+> [`costage-js-library-design.md`](costage-js-library-design.md)（Mode 2，JS library，待立项）。
+
+用户同步（api_key 管理面，超市场景）：
+- 顾客注册 → `PUT /api/v1/service/users/mall-<id>`（canLive=false，role=guest）
+- 员工建档 → 同端点（canLive=true，role=teacher）
+- 换票 userId 与同步 external_id 同源（`mall-<id>`），CoStage 侧自动对上同一账号
+
+直播权限双层闸：**业务决策闸**（authz，业务系统是真相源）+ **CoStage 本地 can_live 标志**
+（独立运行兜底，`PUT users/{externalID} {"canLive":false}` 即停播权）——两层都过才放行。
+
+## 8.1 演示环境拓扑（dev 模拟 vhost）
+
+| 入口 | 反代目标 | 用途 | 生产对应 |
+|---|---|---|---|
+| https://192.168.31.2/ （443） | 7860 | CoStage 独立应用（SPA+API+WS） | live.example.com |
+| https://192.168.31.2:82/ | 7990 | 惠民超市（商城+后台+决策端点） | shop.example.com |
+
+## 8.2 惠民超市实战细节（方案 A：trusted 换票）
 
 业务系统 = 一家单店超市（顾客商城 + 员工后台），接入 CoStage 做**商品直播**：
 店员开播卖货，顾客/匿名观看。
