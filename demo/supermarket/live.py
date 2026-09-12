@@ -95,7 +95,11 @@ def sync_user(biz_user, display_name: str, role: str, can_live: bool) -> None:
 
 
 def list_live_rooms():
-    """直播中的员工房（hostId=mall-*）。CoStage 不可达返回空（条隐藏）。"""
+    """直播中的本店员工房。CoStage 不可达返回空（条隐藏）。
+
+    hostId 是 CoStage 数字 uid（与决策请求同源），须经 Profile.co_stage_uid
+    映射识别本店员工——不能按 mall- 前缀过滤（目录里没有 external_id）。
+    """
     try:
         resp = requests.get(settings.COSTAGE_BASE_URL + "/api/rooms", timeout=3)
     except requests.RequestException:
@@ -103,5 +107,7 @@ def list_live_rooms():
     if resp.status_code != 200:
         return []
     rooms = resp.json().get("rooms", [])
+    from .models import Profile  # 局部导入避免循环
+    uids = set(Profile.objects.exclude(co_stage_uid="").values_list("co_stage_uid", flat=True))
     return [r for r in rooms
-            if str(r.get("hostId", "")).startswith("mall-") and r.get("state") == "live"]
+            if str(r.get("hostId", "")) in uids and r.get("state") == "live"]
