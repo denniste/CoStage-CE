@@ -7,13 +7,18 @@
   {% for r in live_rooms %}
   <a href="{{ live_entry }}/room/{{ r.roomId }}" target="_blank" rel="noopener"
      style="background:#0f7b4f;color:#fff;border-radius:8px;padding:7px 12px;font-size:13px">
-    {{ r.hostName }} 的直播间 · 进来看 →</a>
+    {{ r.hostName }}{% if r.category %} · {{ r.category }}{% endif %} · 进来看 →</a>
   {% endfor %}
+  <a href="/live/" style="margin-left:auto;color:#fff;font-size:13px;text-decoration:underline">全部直播间 →</a>
 </div>
 {% endif %}
 <div class="cats">
   <a href="/" class="{% if not current %}on{% endif %}">全部</a>
-  {% for c in categories %}<a href="/?category={{ c.id }}" class="{% if current.id == c.id %}on{% endif %}">{{ c.name }}</a>{% endfor %}
+  {% for c in categories %}
+  <a href="/?category={{ c.id }}" class="{% if current.id == c.id %}on{% endif %}">
+    {{ c.name }}{% if live_by_cat and live_by_cat|get_item:c.name %} <span style="color:#e0342c">●{{ live_by_cat|get_item:c.name }}</span>{% endif %}
+  </a>
+  {% endfor %}
 </div>
 {% if page.object_list %}
 <div class="grid">

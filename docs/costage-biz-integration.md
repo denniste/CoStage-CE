@@ -230,11 +230,20 @@ CoStage 带第 2 节 env 重启。种子映射：admin(uid=1)=教师、user01-04
 | `mic.accept` | 操作者是员工，且**被批准者**也须是员工 |
 | `room.join` | 一律放行（顾客 60s 缓存；匿名/未登记者归 CoStage accessMode 管辖） |
 
-### 8.3 观看：商城「直播中」条
+### 8.3 观看：直播间发现（列表页 + 分类角标 + 商品页横幅）
 
-超市首页实时拉 `GET /api/rooms` 过滤 `hostId` 以 `x-trusted-` 开头且 `state=live`
-的房间，渲染「直播中」入口链接到 `https://<CoStage入口>/room/<roomId>`——
-浏览器无票即走 SPA 匿名观看流（anon-token），登录顾客同理。
+数据源就是 CoStage 既有的匿名目录 API `GET /api/rooms`（超市侧过滤 `hostId` 以
+`mall-` 开头且 `state=live` 的房间——本店店员的房）。三个触点：
+
+1. **「直播间」列表页** `/live/`：全部直播中房间（缩略图=LIVE 徽标+CoStage 房间截图
+   `GET /api/rooms/{id}/thumb`，分类筛选），点击跳 CoStage 房间页（无票=匿名观看流）；
+2. **首页**：直播中条（各房直达）+ 分类 chip 上的红色 `●N` 直播角标；
+3. **商品详情页**：同分类有直播时显示「该分类正在直播 · 边看边买」横幅。
+
+**分类联动规则**：CoStage 房间的 `category` 字符串 == 超市分类名 即匹配。
+超市经 `PUT /api/v1/service/categories` 把 CoStage 分类表替换为自己的商品分类名
+（demo 已做：7 个分类已对齐），店员开播后在 CoStage 房间设置里选对应分类即可。
+分类与商品页的对应关系由超市侧维护，CoStage 不感知商品域。
 
 ### 8.4 演示走查
 

@@ -6,6 +6,7 @@ from . import livegate, views_auth, views_cart, views_order, views_store, views_
 urlpatterns = [
     # 顾客商城（匿名可浏览）
     path("", views_store.home, name="home"),
+    path("live/", views_store.live_list, name="live_list"),
     path("product/<int:pk>/", views_store.product_detail, name="product_detail"),
     path("register/", views_auth.register, name="register"),
     path("login/", views_auth.user_login, name="login"),

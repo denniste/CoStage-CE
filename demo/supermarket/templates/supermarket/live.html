@@ -1,0 +1,51 @@
+{% extends "supermarket/base.html" %}
+{% block title %}正在直播 - 惠民超市{% endblock %}
+{% block main %}
+<h2 style="margin-top:0">
+  ● 正在直播
+  <span style="font-size:13px;color:#8a919f">（店员在直播间实时卖货，点击进入观看；无需登录）</span>
+</h2>
+{% if cats %}
+<div class="cats">
+  <a href="/live/" class="{% if not cat %}on{% endif %}">全部</a>
+  {% for c in cats %}<a href="/live/?category={{ c|urlencode }}" class="{% if cat == c %}on{% endif %}">{{ c }}</a>{% endfor %}
+</div>
+{% endif %}
+{% if rooms %}
+<div class="grid">
+  {% for r in rooms %}
+  <a class="card" href="{{ live_entry }}/room/{{ r.roomId }}" target="_blank" rel="noopener">
+    <div style="position:relative">
+      <div class="thumb" style="background:hsl(152,40%,42%)">{{ r.hostName|slice:":1" }}</div>
+      {% if r.thumbAt %}
+      <img src="{{ live_entry }}/api/rooms/{{ r.roomId }}/thumb?t={{ r.thumbAt }}"
+           style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"
+           onerror="this.remove()">
+      {% endif %}
+      <span style="position:absolute;top:8px;left:8px;background:#e0342c;color:#fff;
+            border-radius:99px;padding:2px 10px;font-size:12px;font-weight:700">● LIVE</span>
+    </div>
+    <div class="body">
+      <div class="name">{{ r.hostName }} 的直播间</div>
+      <div class="desc">{% if r.category %}分类：{{ r.category }}{% else %}未选分类{% endif %}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="color:#0f7b4f;font-weight:700;font-size:14px">进入观看 →</span>
+        <span class="tag t-red">直播中</span>
+      </div>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty">
+  <p style="font-size:40px;margin:0 0 8px">📺</p>
+  {% if cat %}「{{ cat }}」分类暂无直播{% else %}当前没有直播，店员开播后会在这里出现{% endif %}
+</div>
+{% endif %}
+{% endblock %}
+{% block extra %}
+<style>
+  /* 缩略图 404 回退：占位色块（首字符） */
+  .thumb[data-fb]{background:hsl(152,40%,42%)}
+</style>
+{% endblock %}

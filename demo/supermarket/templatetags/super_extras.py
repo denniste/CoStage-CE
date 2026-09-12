@@ -10,3 +10,11 @@ def modulo(value, arg):
         return int(value) % int(arg)
     except (TypeError, ValueError):
         return 0
+
+
+@register.filter
+def get_item(d, key):
+    """字典按键取值（首页分类直播角标）。"""
+    if isinstance(d, dict):
+        return d.get(key)
+    return None
