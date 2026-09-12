@@ -48,9 +48,12 @@ demo/
     └── templates/supermarket/  # 商城 + staff/ 后台模板
 ```
 
-## Phase 2 接入 CoStage（商品直播）
+## Phase 2 接入 CoStage（商品直播，已实现，方案 A trusted 换票）
 
-- 店员在后台「开播卖货」→ 超市为店员签发 CoStage 会话 → 开直播房
-- 商城首页出「直播中」条 → 顾客/匿名一键进入直播间看商品直播
-- CoStage 决策询问 `/biz/v1/decide`：**员工可开播/连麦，顾客仅观看**（livegate.py）
-- 启用配置与契约见接入文档 §2/§3/§4
+- 店员后台「● 开播卖货」→ 超市调 CoStage exchange 换票（`supermarket/live.py`）→
+  带 `#sso=` 跳 CoStage，落地即登录（CoStage web ssoIntake 写票）→「我的房间」开播
+- 商城首页「直播中」条 → 顾客/匿名一键进直播间（匿名走 CoStage anon-token 流）
+- CoStage 决策询问 `/biz/v1/decide`：**员工可开播/连麦，顾客仅观看**（`livegate.py`）
+- CoStage 侧启用：`COSTAGE_AUTH_MODE=trusted` + `COSTAGE_TRUSTED_SECRET`
+  （与 demo settings `COSTAGE_TRUSTED_SECRET` 同值）+ 原 authz 三件 env；
+  契约与走查见接入文档 §8

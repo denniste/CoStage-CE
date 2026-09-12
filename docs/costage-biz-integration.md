@@ -4,7 +4,8 @@
 > 契约源头：CoStage 主仓 `server/costage-server-api-request.md` §4.1/§4.4（能力评估）
 > 与 `server/costage-server-api-implementation-plan.md`（施工方案）。
 > 本文面向**业务系统开发者**：接 CoStage 当执行层，需要实现什么、调用什么、怎么验收。
-> 更新日期：2026-09-12，对齐 CoStage HEAD `7551e01`（P0 M0-M2 收官）。
+> 更新日期：2026-09-12，对齐 CoStage HEAD `5811ad7`（含 SPA trusted 交接入口）。
+> 配套演示：`demo/` 已升级为**惠民超市**（完整超市电商），本文 §8 为其商品直播实战。
 
 ---
 
@@ -175,3 +176,47 @@ CoStage 带第 2 节 env 重启。种子映射：admin(uid=1)=教师、user01-04
   解除接口，业务侧"解除封禁"后该用户仍会 403 REVOKED 到戳过期为止（重新登录无效，
   戳按 userId 而非票校验）。生产接入建议：P1 增加 un-revoke 端点，或把戳 TTL 与业务
   封禁审核周期对齐调短（`RevokeUser` 的 ttl 参数已可配）。
+
+## 8. 惠民超市实战（demo/，方案 A：trusted 换票）
+
+业务系统 = 一家单店超市（顾客商城 + 员工后台），接入 CoStage 做**商品直播**：
+店员开播卖货，顾客/匿名观看。
+
+### 8.1 身份：店员换票（CoStage 侧需 trusted 模式）
+
+```
+店员点后台「开播卖货」
+  └► 超市后端 POST /api/v1/auth/exchange
+     body: {userId:"x-trusted-<工号>", displayName:"店员花名", role:"teacher",
+            ts:<unix秒>, nonce:<uuid>, sig:hex(HMAC-SHA256(TRUSTED_SECRET,
+            "v1|x-trusted-<工号>|teacher|<ts>|<nonce>"))}
+  └► 200 {accessToken, refreshToken, user{...}}（CoStage 自动开户，角色钳 teacher）
+  └► 302 跳转 https://<CoStage入口>/#sso=<access>&rst=<refresh>&u=<b64url(user)>
+       SPA 启动时写票进 localStorage 并清 hash（CoStage web ssoIntake，HEAD 5811ad7）→ 已登录
+  └► 店员在 CoStage「我的房间」开播（房间号 = r-x-trusted-<工号>）
+```
+
+要点：nonce 一次性（CoStage Redis NX 防重放）；ts 偏差 ±30s 内；role 必须在
+`COSTAGE_TRUSTED_ROLES` 白名单内否则被钳成 guest；**超市不存任何 CoStage 口令**。
+
+### 8.2 规则：决策裁决（demo/supermarket/livegate.py）
+
+| 动作 | 规则 |
+|---|---|
+| `live.create` / `mic.apply` / `mic.ready` | 仅员工（x-trusted-* 且角色∈店员/经理） |
+| `mic.accept` | 操作者是员工，且**被批准者**也须是员工 |
+| `room.join` | 一律放行（顾客 60s 缓存；匿名/未登记者归 CoStage accessMode 管辖） |
+
+### 8.3 观看：商城「直播中」条
+
+超市首页实时拉 `GET /api/rooms` 过滤 `hostId` 以 `x-trusted-` 开头且 `state=live`
+的房间，渲染「直播中」入口链接到 `https://<CoStage入口>/room/<roomId>`——
+浏览器无票即走 SPA 匿名观看流（anon-token），登录顾客同理。
+
+### 8.4 演示走查
+
+1. `staff01 / staff123456` 登录超市后台 → 「● 开播卖货」→ 落地 CoStage 已是
+   `店员·staff01`（右侧 my 显示花名）→ 开播
+2. 商城首页出现「直播中 · 店员·staff01 的直播间」→ 无痕窗口点进去匿名看
+3. CoStage 侧把房设私密 → 匿名端清屏（accessMode 语义照旧）
+4. BizHub 决策日志可见每次 live.create/room.join 询问

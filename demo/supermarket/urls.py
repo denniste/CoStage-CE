@@ -24,6 +24,7 @@ urlpatterns = [
     path("biz/v1/decide", livegate.decide_endpoint, name="decide"),
     # 员工后台
     path("staff/", views_staff.dashboard, name="staff_dashboard"),
+    path("staff/live/start/", views_staff.live_start, name="live_start"),
     path("staff/products/", views_staff.products, name="staff_products"),
     path("staff/products/new/", views_staff.product_new, name="product_new"),
     path("staff/products/<int:pk>/edit/", views_staff.product_edit, name="product_edit"),

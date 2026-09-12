@@ -1,7 +1,9 @@
 """顾客商城：首页（分类+搜索+商品网格）、商品详情。匿名可浏览。"""
+from django.conf import settings
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, render
 
+from . import live
 from .models import Category, Product
 
 PAGE_SIZE = 12
@@ -29,6 +31,8 @@ def home(request):
     return render(request, "supermarket/home.html", {
         "categories": categories, "current": current, "q": q,
         "page": page, "cart_count": _cart_count(request),
+        "live_rooms": live.list_live_rooms(),
+        "live_entry": getattr(settings, "COSTAGE_ENTRY_URL", ""),
     })
 
 

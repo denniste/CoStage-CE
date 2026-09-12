@@ -1,0 +1,75 @@
+"""CoStage 商品直播接入（Phase 2，方案 A：trusted 换票）。
+
+- staff_start_live(): 超市代店员向 CoStage 换票（HMAC "v1|uid|role|ts|nonce"，
+  角色 teacher，CoStage 侧钳制白名单），返回带 #sso 票证的跳转 URL——
+  店员浏览器打开即已登录 CoStage（SPA ssoIntake 写票）。
+- list_live_rooms(): 拉目录过滤员工房（hostId 以 x-trusted- 开头），供商城「直播中」条。
+"""
+import base64
+import hashlib
+import hmac
+import json
+import logging
+import time
+import uuid
+
+import requests
+from django.conf import settings
+
+log = logging.getLogger(__name__)
+
+
+class CoStageError(Exception):
+    pass
+
+
+def _sign(user_id: str, role: str, ts: str, nonce: str) -> str:
+    m = hmac.new(settings.COSTAGE_TRUSTED_SECRET.encode(), digestmod=hashlib.sha256)
+    m.update(f"v1|{user_id}|{role}|{ts}|{nonce}".encode())
+    return m.hexdigest()
+
+
+def staff_start_live(staff_user, display_name: str) -> str:
+    """为店员换 CoStage 会话，返回落地 URL（含 #sso 票证交接段）。"""
+    user_id = f"x-trusted-{staff_user.id}"
+    ts = str(int(time.time()))
+    nonce = uuid.uuid4().hex
+    body = {
+        "userId": user_id,
+        "displayName": display_name or staff_user.username,
+        "role": "teacher",  # CoStage COSTAGE_TRUSTED_ROLES 钳制白名单内
+        "ts": ts,
+        "nonce": nonce,
+        "sig": _sign(user_id, "teacher", ts, nonce),
+    }
+    try:
+        resp = requests.post(settings.COSTAGE_BASE_URL + "/api/v1/auth/exchange",
+                             json=body, timeout=5)
+    except requests.RequestException as e:
+        raise CoStageError(f"CoStage 不可达：{e}")
+    if resp.status_code != 200:
+        raise CoStageError(f"换票失败 {resp.status_code}: {resp.text[:200]}")
+    data = resp.json()
+    tokens = data["tokens"] if "tokens" in data else data
+    access = tokens.get("accessToken") or ""
+    refresh = tokens.get("refreshToken") or ""
+    user = data.get("user") or {}
+    if not access:
+        raise CoStageError("换票响应缺 accessToken")
+    u_b64 = base64.urlsafe_b64encode(json.dumps(user, ensure_ascii=False).encode()).decode().rstrip("=")
+    entry = getattr(settings, "COSTAGE_ENTRY_URL", settings.COSTAGE_BASE_URL)
+    frag = f"#sso={access}&rst={refresh}&u={u_b64}"
+    return entry + "/" + frag
+
+
+def list_live_rooms():
+    """直播中的员工房（hostId=x-trusted-*）。CoStage 不可达返回空（条隐藏）。"""
+    try:
+        resp = requests.get(settings.COSTAGE_BASE_URL + "/api/rooms", timeout=3)
+    except requests.RequestException:
+        return []
+    if resp.status_code != 200:
+        return []
+    rooms = resp.json().get("rooms", [])
+    return [r for r in rooms
+            if str(r.get("hostId", "")).startswith("x-trusted-") and r.get("state") == "live"]

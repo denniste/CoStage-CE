@@ -1,6 +1,9 @@
 {% extends "supermarket/staff/base_staff.html" %}
 {% block main %}
-<h2>经营看板 <span class="muted" style="font-size:13px">{{ user.username }}（{{ user.profile.get_role_display }}）</span></h2>
+<h2 style="display:flex;align-items:center;gap:14px">经营看板
+  <span class="muted" style="font-size:13px">{{ user.username }}（{{ user.profile.get_role_display }}）</span>
+  <a class="btn" style="margin-left:auto;background:#e0342c" href="/staff/live/start/">● 开播卖货</a>
+</h2>
 <div class="cards">
   <div class="stat"><div class="label">今日销售额</div><div class="num" style="color:#0f7b4f">¥{{ today_sales }}</div></div>
   <div class="stat"><div class="label">今日订单数</div><div class="num">{{ today_orders }}</div></div>

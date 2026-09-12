@@ -66,5 +66,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # ---- CoStage 集成（Phase 2 生效；Phase 1 阶段可全部留默认）----
 COSTAGE_AUTHZ_SECRET = "demo-bizhub-authz-secret"   # = CoStage COSTAGE_AUTHZ_SECRET
 COSTAGE_SERVICE_TOKEN = "demo-bizhub-service-token" # = CoStage COSTAGE_SERVICE_TOKEN
-COSTAGE_BASE_URL = "http://127.0.0.1:7860"          # CoStage 业务入口
+COSTAGE_BASE_URL = "http://127.0.0.1:7860"          # CoStage 业务入口（服务端调用）
+COSTAGE_ENTRY_URL = "https://192.168.31.2"          # CoStage 浏览器入口（店员换票跳转）
+COSTAGE_TRUSTED_SECRET = "demo-bizhub-trusted-secret"  # = CoStage COSTAGE_TRUSTED_SECRET（换票 HMAC）
 COSTAGE_TS_TOLERANCE = 300                          # 决策时间戳容忍窗（秒）

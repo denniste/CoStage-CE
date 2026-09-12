@@ -8,6 +8,7 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
+from . import live
 from .models import Category, Order, Product, Profile, today_sales
 
 
@@ -37,6 +38,18 @@ def dashboard(request):
         "low_stock": Product.objects.filter(on_shelf=True, stock__lt=10).order_by("stock")[:8],
         "recent_orders": Order.objects.order_by("-created_at")[:8],
     })
+
+
+@staff_required
+def live_start(request):
+    """开播卖货：为当前员工向 CoStage 换票并跳转（方案 A trusted 换票）。"""
+    try:
+        url = live.staff_start_live(request.user,
+                                    request.user.profile.get_role_display() + "·" + request.user.username)
+        return redirect(url)
+    except live.CoStageError as e:
+        messages.error(request, f"开播失败：{e}")
+        return redirect("staff_dashboard")
 
 
 @staff_required

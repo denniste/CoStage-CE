@@ -1,6 +1,16 @@
 {% extends "supermarket/base.html" %}
 {% load super_extras %}
 {% block main %}
+{% if live_rooms %}
+<div style="background:#1f2329;border-radius:10px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+  <span style="color:#fff;font-weight:700"><span style="color:#e0342c">●</span> 直播中</span>
+  {% for r in live_rooms %}
+  <a href="{{ live_entry }}/room/{{ r.roomId }}" target="_blank" rel="noopener"
+     style="background:#0f7b4f;color:#fff;border-radius:8px;padding:7px 12px;font-size:13px">
+    {{ r.hostName }} 的直播间 · 进来看 →</a>
+  {% endfor %}
+</div>
+{% endif %}
 <div class="cats">
   <a href="/" class="{% if not current %}on{% endif %}">全部</a>
   {% for c in categories %}<a href="/?category={{ c.id }}" class="{% if current.id == c.id %}on{% endif %}">{{ c.name }}</a>{% endfor %}
