@@ -109,5 +109,24 @@ def list_live_rooms():
     rooms = resp.json().get("rooms", [])
     from .models import Profile  # 局部导入避免循环
     uids = set(Profile.objects.exclude(co_stage_uid="").values_list("co_stage_uid", flat=True))
-    return [r for r in rooms
+    ours = [r for r in rooms
             if str(r.get("hostId", "")) in uids and r.get("state") == "live"]
+    # 自动命名（Mode 1 白标）：本店房间缺 displayName 时补「<房主>直播间」，幂等容忍失败
+    for r in ours:
+        if not r.get("displayName"):
+            _auto_name(r)
+    return ours
+
+
+def _auto_name(room: dict) -> None:
+    name = f"{room.get('hostName', '')}直播间"
+    try:
+        requests.put(
+            f"{settings.COSTAGE_BASE_URL}/api/v1/service/rooms/{room['roomId']}/name",
+            json={"displayName": name},
+            headers={"X-CoStage-Service-Token": settings.COSTAGE_SERVICE_TOKEN},
+            timeout=3,
+        )
+        room["displayName"] = name
+    except requests.RequestException:
+        pass
