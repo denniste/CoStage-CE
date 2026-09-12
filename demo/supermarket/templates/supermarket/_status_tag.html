@@ -1,0 +1,5 @@
+{% if s == 'pending_payment' %}<span class="tag t-orange">待支付</span>
+{% elif s == 'paid' %}<span class="tag t-blue">已支付/待发货</span>
+{% elif s == 'shipped' %}<span class="tag t-green">已发货</span>
+{% elif s == 'completed' %}<span class="tag t-gray">已完成</span>
+{% else %}<span class="tag t-red">已取消</span>{% endif %}

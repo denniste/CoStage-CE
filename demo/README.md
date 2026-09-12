@@ -1,51 +1,56 @@
-# BizHub —— CoStage 业务接入演示系统（Django）
+# 惠民超市（BizHub）—— CoStage 业务接入演示系统
 
-业务系统视角的 CoStage P0 接入参考实现：决策端点（CoStage 出站询问的裁决方）+
-撤权调用方（业务处罚 → CoStage 强制下线）。**接入文档见 [`../docs/costage-biz-integration.md`](../docs/costage-biz-integration.md)**。
+一家**单店大型超市**的完整业务系统（Django 实现，非多租户 SaaS）：顾客商城 + 员工后台。
+Phase 1 = 超市本体（独立运行，不依赖 CoStage）；Phase 2 = 接入 CoStage 做**商品直播**
+（店员开播卖货、顾客/匿名观看）。
+
+- 接入文档：[`../docs/costage-biz-integration.md`](../docs/costage-biz-integration.md)
 
 ## 启动
 
 ```bash
-./run.sh          # venv + 依赖 + 迁移 + 种子 + runserver 127.0.0.1:7990
+./run.sh    # venv + 依赖 + 迁移 + 种子 + runserver 127.0.0.1:7990
 ```
 
-- 运营控制台：http://127.0.0.1:7990/ （bizadmin / bizadmin1234，见 seed_demo.py）
-- 决策端点：`POST http://127.0.0.1:7990/biz/v1/decide`（HMAC 签名，见文档 §3）
+## 账号（种子见 seed_demo.py）
+
+| 角色 | 账号 | 口令 | 说明 |
+|---|---|---|---|
+| 经理（店长） | `manager` | `manager123` | 全部后台 + 员工/分类管理 |
+| 店员 | `staff01` ~ `staff03` | `staff123456` | 看板/商品上下架/库存/发货 |
+| 顾客 | 自助注册 | — | 商城首页 → 注册 |
+
+## 功能清单
+
+**顾客商城**（匿名可浏览，登录后购买）
+- 分类浏览 / 关键词搜索 / 商品详情
+- 购物车（加购/改量/删除，库存上限约束）
+- 下单（收货信息，事务扣库存）→ 模拟支付 → 取消（回补库存）→ 确认收货
+- 我的订单 / 订单详情（状态：待支付→已支付→已发货→已完成/已取消）
+
+**员工后台** `/staff/`（登录后按角色自动跳转）
+- 经营看板：今日销售额/订单数、待发货、低库存预警、最新订单
+- 商品管理：新增/编辑（经理）、上下架（店员）、库存调整（盘点 ±）
+- 订单管理：按状态筛选、发货
+- 分类管理（经理）：增删（空分类才可删）
+- 员工管理（经理）：店员/经理建档、停用启用
 
 ## 结构
 
 ```
 demo/
-├── run.sh                  # 一键启动
-├── seed_demo.py            # 种子：CoStage users(id 1-5) → 业务身份映射 + 运营账号（幂等）
-├── bizhub/                 # Django 工程（settings 含全部集成常量）
-└── liveops/
-    ├── models.py           # BizUser（业务身份真相源）+ DecisionLog（决策落痕）
-    ├── services.py         # ★ verify_signature + decide（演示规则集）+ revoke（撤权调用）
-    ├── views.py            # /biz/v1/decide 端点 + 控制台（升教师/禁播撤权/踢观看）
-    └── templates/          # 登录页 + 运营控制台
+├── run.sh / requirements.txt / seed_demo.py
+├── bizhub/                  # Django 工程配置
+└── supermarket/
+    ├── models.py            # Profile(角色) Category Product CartItem Order OrderItem DecisionLog
+    ├── views_auth/store/cart/order/staff.py   # 各功能区视图
+    ├── livegate.py          # CoStage 决策端点（Phase 2：/biz/v1/decide）
+    └── templates/supermarket/  # 商城 + staff/ 后台模板
 ```
 
-## 演示规则集（services.py::decide）
+## Phase 2 接入 CoStage（商品直播）
 
-| 动作 | 规则 |
-|---|---|
-| `live.create` | status=active 且 role=teacher |
-| `room.join` | status != banned（放行带 60s 缓存） |
-| `mic.apply/ready/accept` | status=active 且 role ∈ {teacher, student} |
-| 未收录用户 | 一律拒绝（白名单语义） |
-
-## CoStage 侧对接
-
-重启 CoStage 时追加（其余 env 不变）：
-
-```bash
-COSTAGE_AUTHZ_URL='http://127.0.0.1:7990/biz/v1/decide' \
-COSTAGE_AUTHZ_SECRET='demo-bizhub-authz-secret' \
-COSTAGE_SERVICE_TOKEN='demo-bizhub-service-token'
-```
-
-启动日志应出现 `[authz] 已启用决策点 url=... mode=enforce failMode=closed` 与
-`[svcapi] 服务间端点已挂载 /api/v1/service/*`。
-
-> 密钥为演示定值，生产务必更换（文档 §7）。
+- 店员在后台「开播卖货」→ 超市为店员签发 CoStage 会话 → 开直播房
+- 商城首页出「直播中」条 → 顾客/匿名一键进入直播间看商品直播
+- CoStage 决策询问 `/biz/v1/decide`：**员工可开播/连麦，顾客仅观看**（livegate.py）
+- 启用配置与契约见接入文档 §2/§3/§4

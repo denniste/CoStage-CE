@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}员工后台 - 惠民超市{% endblock %}</title>
+<style>
+  *{box-sizing:border-box}
+  body{font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f2f4f7;color:#1f2329;display:flex;min-height:100vh}
+  aside{width:200px;background:#123d2e;color:#cfe3d8;flex-shrink:0}
+  aside .brand{padding:18px 16px;font-weight:700;color:#fff;font-size:16px;border-bottom:1px solid rgba(255,255,255,.08)}
+  aside a{display:block;padding:11px 16px;font-size:14px}
+  aside a:hover,aside a.on{background:rgba(255,255,255,.1);color:#fff}
+  .content{flex:1;padding:22px}
+  h2{margin-top:0}
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #e3e6ea;border-radius:10px;overflow:hidden}
+  th,td{padding:9px 12px;border-bottom:1px solid #eef0f4;font-size:13.5px;text-align:left}
+  th{background:#fafbfc;color:#5c6470;font-weight:600}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:18px}
+  .stat{background:#fff;border:1px solid #e3e6ea;border-radius:10px;padding:16px}
+  .stat .num{font-size:26px;font-weight:700;margin:4px 0}
+  .stat .label{font-size:13px;color:#8a919f}
+  .btn{border:0;border-radius:8px;padding:7px 13px;font-size:13px;cursor:pointer;background:#0f7b4f;color:#fff;display:inline-block}
+  .btn.gray{background:#eef0f3;color:#1f2329}
+  .btn.red{background:#e0342c}
+  .btn.sm{padding:4px 10px;font-size:12px}
+  form.inline{display:inline}
+  input,select{padding:7px 10px;border:1px solid #d6dae1;border-radius:8px;font-size:13px}
+  .tag{padding:2px 10px;border-radius:99px;font-size:12px}
+  .t-gray{background:#eef0f3;color:#5c6470}.t-green{background:#e6f5ec;color:#0a6e39}.t-blue{background:#e7f0fd;color:#1d5fd1}.t-orange{background:#fff4e0;color:#9a6700}.t-red{background:#fdecea;color:#c0392b}
+  .msg p{margin:0 0 12px;padding:10px 14px;border-radius:8px;font-size:14px}
+  .success{background:#e6f5ec;color:#0a6e39}.error{background:#fdecea;color:#c0392b}.warning{background:#fff4e0;color:#9a6700}
+  .panel{background:#fff;border:1px solid #e3e6ea;border-radius:10px;padding:18px;margin-bottom:16px}
+  .muted{color:#8a919f}
+  a{color:inherit;text-decoration:none}
+</style>
+</head>
+<body>
+<aside>
+  <div class="brand">惠民超市 · 员工后台</div>
+  <a href="/staff/" class="{% if request.resolver_match.url_name == 'staff_dashboard' %}on{% endif %}">经营看板</a>
+  <a href="/staff/products/" class="{% if 'product' in request.resolver_match.url_name %}on{% endif %}">商品管理</a>
+  <a href="/staff/orders/" class="{% if 'order' in request.resolver_match.url_name %}on{% endif %}">订单管理</a>
+  {% if user.profile.role == 'manager' %}
+  <a href="/staff/categories/" class="{% if request.resolver_match.url_name == 'staff_categories' %}on{% endif %}">分类管理</a>
+  <a href="/staff/team/" class="{% if 'staff' in request.resolver_match.url_name %}on{% endif %}">员工管理</a>
+  {% endif %}
+  <a href="/">← 回商城</a>
+</aside>
+<div class="content">
+  {% if messages %}<div class="msg">{% for m in messages %}<p class="{{ m.tags }}">{{ m }}</p>{% endfor %}</div>{% endif %}
+  {% block main %}{% endblock %}
+</div>
+</body>
+</html>

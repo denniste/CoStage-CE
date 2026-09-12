@@ -1,0 +1,28 @@
+{% extends "supermarket/base.html" %}
+{% block title %}购物车 - 惠民超市{% endblock %}
+{% block main %}
+<h2 style="margin-top:0">购物车</h2>
+{% if items %}
+<table>
+  <tr><th>商品</th><th>单价</th><th>数量</th><th>小计</th><th></th></tr>
+  {% for i in items %}
+  <tr>
+    <td><a href="/product/{{ i.product.id }}/">{{ i.product.name }}</a></td>
+    <td>¥{{ i.product.price }}/{{ i.product.unit }}</td>
+    <td>
+      <form method="post" action="/cart/update/{{ i.id }}/" style="display:flex;gap:6px;align-items:center">{% csrf_token %}
+        <input type="number" name="qty" value="{{ i.qty }}" min="1" max="{{ i.product.stock }}" style="width:64px;padding:5px;border:1px solid #d6dae1;border-radius:6px">
+        <button class="btn gray sm">更新</button>
+      </form>
+    </td>
+    <td>¥{{ i.subtotal }}</td>
+    <td><form method="post" action="/cart/update/{{ i.id }}/">{% csrf_token %}<input type="hidden" name="op" value="remove"><button class="btn red sm">删除</button></form></td>
+  </tr>
+  {% endfor %}
+  <tr><th colspan="3" style="text-align:right">合计</th><th>¥{{ total }}</th>
+      <th><a class="btn" href="/order/checkout/">去结算</a></th></tr>
+</table>
+{% else %}
+<div class="empty">购物车空空如也，<a href="/" style="color:#0f7b4f">去逛逛</a></div>
+{% endif %}
+{% endblock %}

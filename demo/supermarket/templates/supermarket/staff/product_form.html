@@ -1,0 +1,25 @@
+{% extends "supermarket/staff/base_staff.html" %}
+{% block main %}
+<h2>{% if p %}编辑商品：{{ p.name }}{% else %}新增商品{% endif %}</h2>
+<div class="panel" style="max-width:520px">
+  <form method="post" style="display:grid;gap:12px">{% csrf_token %}
+    <input name="name" placeholder="商品名" value="{{ p.name|default:'' }}" required>
+    <select name="category" required>
+      <option value="">选择分类…</option>
+      {% for c in categories %}<option value="{{ c.id }}" {% if p.category.id == c.id %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+    </select>
+    <div style="display:flex;gap:10px">
+      <input name="price" placeholder="售价" value="{{ p.price|default:'' }}" required style="flex:1">
+      <input name="unit" placeholder="单位" value="{{ p.unit|default:'件' }}" style="width:90px">
+      <input name="stock" placeholder="库存" value="{{ p.stock|default:0 }}" required style="width:110px">
+    </div>
+    <input name="barcode" placeholder="条码（可选）" value="{{ p.barcode|default:'' }}">
+    <input name="desc" placeholder="商品描述（可选）" value="{{ p.desc|default:'' }}">
+    <label style="font-size:14px"><input type="checkbox" name="on_shelf" {% if not p or p.on_shelf %}checked{% endif %}> 立即上架</label>
+    <div style="display:flex;gap:10px">
+      <button class="btn">保存</button>
+      <a class="btn gray" href="/staff/products/">返回</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

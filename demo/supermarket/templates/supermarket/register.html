@@ -1,0 +1,15 @@
+{% extends "supermarket/base.html" %}
+{% block title %}注册 - 惠民超市{% endblock %}
+{% block main %}
+<div class="panel" style="max-width:380px;margin:40px auto">
+  <h2 style="margin-top:0">注册顾客账号</h2>
+  <form method="post" style="display:grid;gap:12px">{% csrf_token %}
+    <input name="username" placeholder="用户名（3-20 字符）" required style="padding:10px 12px;border:1px solid #d6dae1;border-radius:8px">
+    <input name="phone" placeholder="手机号（可选）" style="padding:10px 12px;border:1px solid #d6dae1;border-radius:8px">
+    <input name="password" type="password" placeholder="口令" required style="padding:10px 12px;border:1px solid #d6dae1;border-radius:8px">
+    <input name="password2" type="password" placeholder="重复口令" required style="padding:10px 12px;border:1px solid #d6dae1;border-radius:8px">
+    <button class="btn">注册</button>
+    <span style="font-size:13px;color:#8a919f">已有账号？<a href="/login/" style="color:#0f7b4f">去登录</a></span>
+  </form>
+</div>
+{% endblock %}

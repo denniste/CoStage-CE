@@ -1,0 +1,32 @@
+{% extends "supermarket/staff/base_staff.html" %}
+{% block main %}
+<h2>员工管理</h2>
+<div class="panel" style="max-width:520px">
+  <form method="post" style="display:flex;gap:10px;flex-wrap:wrap">{% csrf_token %}
+    <input name="username" placeholder="用户名" required style="flex:1;min-width:120px">
+    <input name="password" placeholder="初始口令" required style="flex:1;min-width:120px">
+    <select name="role" required>
+      <option value="staff">店员</option>
+      <option value="manager">经理</option>
+    </select>
+    <button class="btn">建档</button>
+  </form>
+</div>
+<table style="max-width:640px">
+  <tr><th>账号</th><th>角色</th><th>状态</th><th>操作</th></tr>
+  {% for s in staff %}
+  <tr>
+    <td>{{ s.user.username }}</td>
+    <td>{% if s.role == 'manager' %}<span class="tag t-blue">经理</span>{% else %}<span class="tag t-green">店员</span>{% endif %}</td>
+    <td>{% if s.user.is_active %}<span class="tag t-green">启用</span>{% else %}<span class="tag t-red">停用</span>{% endif %}</td>
+    <td>
+      {% if s.user != request.user %}
+      <form class="inline" method="post" action="/staff/team/{{ s.id }}/toggle/">{% csrf_token %}
+        <button class="btn gray sm">{{ s.user.is_active|yesno:"停用,启用" }}</button>
+      </form>
+      {% else %}<span class="muted" style="font-size:12px">（当前登录）</span>{% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

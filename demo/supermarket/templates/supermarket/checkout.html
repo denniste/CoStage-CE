@@ -1,0 +1,19 @@
+{% extends "supermarket/base.html" %}
+{% block title %}确认订单 - 惠民超市{% endblock %}
+{% block main %}
+<h2 style="margin-top:0">确认订单</h2>
+<div class="panel">
+  <table>
+    <tr><th>商品</th><th>单价</th><th>数量</th><th>小计</th></tr>
+    {% for i in items %}<tr><td>{{ i.product.name }}</td><td>¥{{ i.product.price }}</td><td>{{ i.qty }}</td><td>¥{{ i.subtotal }}</td></tr>{% endfor %}
+    <tr><th colspan="3" style="text-align:right">合计</th><th>¥{{ total }}</th></tr>
+  </table>
+  <form method="post" style="margin-top:16px;display:grid;gap:10px;max-width:480px">{% csrf_token %}
+    <input name="receiver" placeholder="收货人" required style="padding:9px 12px;border:1px solid #d6dae1;border-radius:8px">
+    <input name="phone" placeholder="联系电话" value="{{ phone }}" required style="padding:9px 12px;border:1px solid #d6dae1;border-radius:8px">
+    <input name="address" placeholder="配送地址（如：阳光小区 3 号楼 201）" required style="padding:9px 12px;border:1px solid #d6dae1;border-radius:8px">
+    <input name="note" placeholder="备注（可选）" style="padding:9px 12px;border:1px solid #d6dae1;border-radius:8px">
+    <button class="btn">提交订单（货到付款前先下单）</button>
+  </form>
+</div>
+{% endblock %}

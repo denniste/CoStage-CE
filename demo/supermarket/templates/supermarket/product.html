@@ -1,0 +1,26 @@
+{% extends "supermarket/base.html" %}
+{% load super_extras %}
+{% block main %}
+<div class="panel" style="display:flex;gap:24px;flex-wrap:wrap">
+  <div class="thumb" style="flex:0 0 300px;aspect-ratio:4/3;display:grid;place-items:center;font-size:64px;font-weight:700;color:#fff;border-radius:10px;background:hsl({{ p.id|add:37|modulo:360 }},42%,46%)">{{ p.name|slice:":1" }}</div>
+  <div style="flex:1;min-width:260px">
+    <h2 style="margin:0 0 6px">{{ p.name }}</h2>
+    <p style="color:#8a919f;font-size:14px;margin:0 0 14px">{{ p.desc }}</p>
+    <div class="price" style="font-size:26px">¥{{ p.price }}<small>/{{ p.unit }}</small></div>
+    <p style="font-size:13px;color:#5c6470">
+      分类：{{ p.category.name }} ｜ 库存：
+      {% if p.stock > 0 %}{{ p.stock }}{% else %}<span class="tag t-red">已售罄</span>{% endif %}
+    </p>
+    {% if user.is_authenticated %}
+    <form method="post" action="/cart/add/{{ p.id }}/" style="display:flex;gap:10px;align-items:center">
+      {% csrf_token %}
+      <input type="number" name="qty" value="1" min="1" max="{{ p.stock }}" style="width:70px;padding:8px;border:1px solid #d6dae1;border-radius:8px">
+      <button class="btn" {% if p.stock < 1 %}disabled{% endif %}>加入购物车</button>
+      <a class="btn gray" href="/cart/">去结算</a>
+    </form>
+    {% else %}
+    <a class="btn" href="/login/">登录后购买</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "supermarket/base.html" %}
+{% load super_extras %}
+{% block main %}
+<div class="cats">
+  <a href="/" class="{% if not current %}on{% endif %}">全部</a>
+  {% for c in categories %}<a href="/?category={{ c.id }}" class="{% if current.id == c.id %}on{% endif %}">{{ c.name }}</a>{% endfor %}
+</div>
+{% if page.object_list %}
+<div class="grid">
+  {% for p in page.object_list %}
+  <a class="card" href="/product/{{ p.id }}/">
+    <div class="thumb" style="background:hsl({{ p.id|add:37|modulo:360 }},42%,46%)">{{ p.name|slice:":1" }}</div>
+    <div class="body">
+      <div class="name">{{ p.name }}</div>
+      <div class="desc">{{ p.desc }}</div>
+      <div class="price">¥{{ p.price }}<small>/{{ p.unit }}</small></div>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+<div class="page">
+  {% if page.has_previous %}<a class="btn gray sm" href="?{{ query_string }}page={{ page.previous_page_number }}">上一页</a>{% endif %}
+  <span class="btn gray sm">第 {{ page.number }} / {{ page.paginator.num_pages }} 页</span>
+  {% if page.has_next %}<a class="btn gray sm" href="?page={{ page.next_page_number }}">下一页</a>{% endif %}
+</div>
+{% else %}
+<div class="empty">没有找到商品{% if q %}（关键词「{{ q }}」）{% endif %}</div>
+{% endif %}
+{% endblock %}

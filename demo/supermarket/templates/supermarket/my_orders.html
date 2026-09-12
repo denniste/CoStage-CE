@@ -1,0 +1,20 @@
+{% extends "supermarket/base.html" %}
+{% block title %}我的订单 - 惠民超市{% endblock %}
+{% block main %}
+<h2 style="margin-top:0">我的订单</h2>
+{% if orders %}
+<table>
+  <tr><th>订单号</th><th>商品</th><th>金额</th><th>状态</th><th>下单时间</th><th></th></tr>
+  {% for o in orders %}
+  <tr>
+    <td>{{ o.sn }}</td>
+    <td>{% for it in o.items.all %}{{ it.product_name }}×{{ it.qty }}{% if not forloop.last %}、{% endif %}{% endfor %}</td>
+    <td>¥{{ o.total }}</td>
+    <td>{% include "supermarket/_status_tag.html" with s=o.status %}</td>
+    <td>{{ o.created_at|date:"m-d H:i" }}</td>
+    <td><a class="btn gray sm" href="/orders/{{ o.sn }}/">详情</a></td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}<div class="empty">还没有订单</div>{% endif %}
+{% endblock %}

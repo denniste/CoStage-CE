@@ -1,0 +1,31 @@
+{% extends "supermarket/staff/base_staff.html" %}
+{% block main %}
+<h2>商品管理</h2>
+<div style="display:flex;gap:10px;margin-bottom:14px">
+  <form method="get" style="display:flex;gap:8px"><input name="q" value="{{ q }}" placeholder="搜商品名"><button class="btn gray">搜索</button></form>
+  {% if user.profile.role == 'manager' %}<a class="btn" href="/staff/products/new/">+ 新增商品</a>{% endif %}
+</div>
+<table>
+  <tr><th>商品</th><th>分类</th><th>售价</th><th>库存</th><th>状态</th><th>操作</th></tr>
+  {% for p in products %}
+  <tr>
+    <td>{{ p.name }}{% if p.desc %} <span class="muted" style="font-size:12px">{{ p.desc }}</span>{% endif %}</td>
+    <td>{{ p.category.name }}</td>
+    <td>¥{{ p.price }}/{{ p.unit }}</td>
+    <td>
+      {% if p.low_stock %}<span class="tag t-red">{{ p.stock }}</span>{% else %}{{ p.stock }}{% endif %}
+      <form class="inline" method="post" action="/staff/products/{{ p.id }}/stock/">{% csrf_token %}
+        <input name="delta" placeholder="±" style="width:52px"><button class="btn gray sm">调整</button>
+      </form>
+    </td>
+    <td>{% if p.on_shelf %}<span class="tag t-green">上架中</span>{% else %}<span class="tag t-gray">已下架</span>{% endif %}</td>
+    <td>
+      <form class="inline" method="post" action="/staff/products/{{ p.id }}/toggle/">{% csrf_token %}
+        <button class="btn gray sm">{{ p.on_shelf|yesno:"下架,上架" }}</button>
+      </form>
+      {% if user.profile.role == 'manager' %}<a class="btn gray sm" href="/staff/products/{{ p.id }}/edit/">编辑</a>{% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

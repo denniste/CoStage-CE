@@ -1,0 +1,18 @@
+{% extends "supermarket/staff/base_staff.html" %}
+{% block main %}
+<h2>分类管理</h2>
+<div class="panel" style="max-width:460px">
+  <form method="post" style="display:flex;gap:10px">{% csrf_token %}
+    <input name="name" placeholder="新分类名" required style="flex:1">
+    <input name="sort" placeholder="排序" type="number" value="0" style="width:80px">
+    <button class="btn">添加</button>
+  </form>
+</div>
+<table style="max-width:460px">
+  <tr><th>分类</th><th>商品数</th><th>排序</th><th></th></tr>
+  {% for c in categories %}
+  <tr><td>{{ c.name }}</td><td>{{ c.products.count }}</td><td>{{ c.sort }}</td>
+      <td>{% if not c.products.exists %}<form class="inline" method="post" action="/staff/categories/{{ c.id }}/delete/">{% csrf_token %}<button class="btn red sm">删除</button></form>{% else %}<span class="muted" style="font-size:12px">有商品不可删</span>{% endif %}</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

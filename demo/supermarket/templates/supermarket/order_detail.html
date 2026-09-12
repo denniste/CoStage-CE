@@ -1,0 +1,35 @@
+{% extends "supermarket/base.html" %}
+{% block title %}订单 {{ order.sn }} - 惠民超市{% endblock %}
+{% block main %}
+<div class="panel">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <h2 style="margin:0">订单 {{ order.sn }}</h2>
+    {% include "supermarket/_status_tag.html" with s=order.status %}
+  </div>
+  <p style="color:#5c6470;font-size:14px">
+    收货：{{ order.receiver }} {{ order.phone }} ｜ {{ order.address }}
+    {% if order.note %}｜ 备注：{{ order.note }}{% endif %}
+  </p>
+  <table>
+    <tr><th>商品</th><th>单价</th><th>数量</th><th>小计</th></tr>
+    {% for it in order.items.all %}<tr><td>{{ it.product_name }}</td><td>¥{{ it.price }}</td><td>{{ it.qty }}</td><td>¥{{ it.subtotal }}</td></tr>{% endfor %}
+    <tr><th colspan="3" style="text-align:right">合计</th><th>¥{{ order.total }}</th></tr>
+  </table>
+  <p style="color:#8a919f;font-size:13px">
+    下单 {{ order.created_at|date:"m-d H:i" }}
+    {% if order.paid_at %}｜ 支付 {{ order.paid_at|date:"m-d H:i" }}{% endif %}
+    {% if order.shipped_at %}｜ 发货 {{ order.shipped_at|date:"m-d H:i" }}{% endif %}
+    {% if order.completed_at %}｜ 完成 {{ order.completed_at|date:"m-d H:i" }}{% endif %}
+  </p>
+  <div style="display:flex;gap:10px">
+    {% if order.status == 'pending_payment' %}
+    <form method="post" action="/order/pay/{{ order.sn }}/">{% csrf_token %}<button class="btn">模拟支付</button></form>
+    <form method="post" action="/order/cancel/{{ order.sn }}/">{% csrf_token %}<button class="btn red">取消订单</button></form>
+    {% endif %}
+    {% if order.status == 'shipped' %}
+    <form method="post" action="/order/receive/{{ order.sn }}/">{% csrf_token %}<button class="btn">确认收货</button></form>
+    {% endif %}
+    <a class="btn gray" href="/orders/">返回列表</a>
+  </div>
+</div>
+{% endblock %}

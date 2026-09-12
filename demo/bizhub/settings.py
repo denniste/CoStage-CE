@@ -1,7 +1,7 @@
-"""BizHub——CoStage 业务接入演示系统的 Django 配置。
+"""BizHub——CoStage 业务接入演示系统（一家大型超市：顾客商城 + 员工后台）的 Django 配置。
 
-演示定位：业务系统是「谁可直播 / 谁只能看 / 谁可连麦」的唯一真相源（评估文档 §0）。
-集成常量集中在 COSTAGE_* 区块，与 docs/costage-biz-integration.md 一一对应。
+Phase 1 = 超市电商本体（独立完整运行，不依赖 CoStage）；
+Phase 2 = 接入 CoStage 商品直播（店员开播/顾客观看），集成常量见 COSTAGE_* 区块。
 """
 from pathlib import Path
 
@@ -18,7 +18,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "liveops",
+    "supermarket",
 ]
 
 MIDDLEWARE = [
@@ -41,6 +41,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "supermarket.context_processors.cart_count",
             ],
         },
     },
@@ -62,12 +63,8 @@ USE_TZ = True
 STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# ---- CoStage 集成常量（docs/costage-biz-integration.md §2/§3）----
-# 决策签名密钥：与 CoStage COSTAGE_AUTHZ_SECRET 同值（演示定值，生产走密钥管理）。
-COSTAGE_AUTHZ_SECRET = "demo-bizhub-authz-secret"
-# CoStage 服务间令牌：与 CoStage COSTAGE_SERVICE_TOKEN 同值（撤权端点鉴权）。
-COSTAGE_SERVICE_TOKEN = "demo-bizhub-service-token"
-# CoStage 业务入口（决策无关；撤权/回跳用）。
-COSTAGE_BASE_URL = "http://127.0.0.1:7860"
-# 决策请求时间戳容忍窗（秒）：防重放。
-COSTAGE_TS_TOLERANCE = 300
+# ---- CoStage 集成（Phase 2 生效；Phase 1 阶段可全部留默认）----
+COSTAGE_AUTHZ_SECRET = "demo-bizhub-authz-secret"   # = CoStage COSTAGE_AUTHZ_SECRET
+COSTAGE_SERVICE_TOKEN = "demo-bizhub-service-token" # = CoStage COSTAGE_SERVICE_TOKEN
+COSTAGE_BASE_URL = "http://127.0.0.1:7860"          # CoStage 业务入口
+COSTAGE_TS_TOLERANCE = 300                          # 决策时间戳容忍窗（秒）
