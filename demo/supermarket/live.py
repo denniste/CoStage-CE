@@ -57,6 +57,10 @@ def staff_start_live(staff_user, display_name: str) -> str:
     if not access:
         raise CoStageError("换票响应缺 accessToken")
     u_b64 = base64.urlsafe_b64encode(json.dumps(user, ensure_ascii=False).encode()).decode().rstrip("=")
+    # 回填 CoStage 数字 uid → Profile（此后决策请求带 uid，livegate 靠它还原超市身份）
+    if user.get("id") and not staff_user.profile.co_stage_uid:
+        staff_user.profile.co_stage_uid = str(user["id"])
+        staff_user.profile.save(update_fields=["co_stage_uid"])
     entry = getattr(settings, "COSTAGE_ENTRY_URL", settings.COSTAGE_BASE_URL)
     frag = f"#sso={access}&rst={refresh}&u={u_b64}"
     return entry + "/" + frag

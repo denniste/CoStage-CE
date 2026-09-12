@@ -18,6 +18,10 @@ class Profile(models.Model):
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                                 related_name="profile")
+    # CoStage 数字 uid（首次换票时由 exchange 响应回填）。CoStage 的决策请求带的是
+    # 这个 uid 而非 external_id（mall-<id>）——两个 id 空间不同，必须显式映射，
+    # 禁止用裸数字猜（会撞进超市自身用户表的另一个 id 空间，张冠李戴）。
+    co_stage_uid = models.CharField("CoStage uid", max_length=64, blank=True, db_index=True)
     role = models.CharField("角色", max_length=16, choices=Role.choices, default=Role.CUSTOMER)
     phone = models.CharField("手机号", max_length=20, blank=True)
     created_at = models.DateTimeField("注册时间", auto_now_add=True)

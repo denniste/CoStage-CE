@@ -42,12 +42,16 @@ def verify_signature(timestamp: str, body: bytes, signature: str) -> None:
 
 
 def resolve_user(cstg_user_id: str):
-    """CoStage userId → 超市用户。同步/换票统一前缀 mall-<id>；x-trusted-<id> 为存量兼容。"""
+    """CoStage userId → 超市用户。
+
+    两个 id 空间：external_id 形态（mall-<id>/x-trusted-<id>，换票请求用）
+    与 CoStage 数字 uid（JWT 主体、决策请求实际携带的值，Profile.co_stage_uid 映射）。
+    解析不到一律 None——禁止用裸数字去猜超市自身用户表（id 空间不同，必撞错人）。
+    """
     for prefix in ("mall-", "x-trusted-"):
         if cstg_user_id.startswith(prefix):
             return User.objects.filter(pk=cstg_user_id[len(prefix):]).first()
-    return User.objects.filter(pk=cstg_user_id, profile__role__in=(
-        Profile.Role.STAFF, Profile.Role.MANAGER, Profile.Role.CUSTOMER)).first()
+    return User.objects.filter(profile__co_stage_uid=cstg_user_id).first()
 
 
 def decide(action: str, user_id: str, target_user_id: str):
