@@ -127,6 +127,17 @@ docker compose up -d
     [Install]
     WantedBy=multi-user.target
 
+## 第三方组件与许可
+
+CoStage CE 仅以编译产物分发（见 `LICENSE`）。包内第三方组件的署名与许可全文随包提供：
+
+- `third-party/LICENSE.livekit.txt` + `third-party/NOTICE.livekit.txt` —— **LiveKit server**，Apache-2.0
+  （Apache-2.0 §4(d) 要求随分发复制上游 NOTICE）
+- `third-party/LICENSE.zlmediakit.txt` —— **ZLMediaKit**（`MediaServer`），MIT
+- `third-party/LICENSE.tldraw.txt` —— **tldraw**（面板 / JS SDK 内的白板引擎），**tldraw license**：
+  ⚠ 非开源许可，**用于生产环境须先向 tldraw Inc. 购买商业许可**（开发/测试不受限），且要求随分发附全文
+- 完整清单（含 Go/Pion/React 等依赖）与逐条说明见包根 **`THIRD-PARTY.md`**
+
 ## 许可与源码
 
 本产品以编译产物发布（无源码、无 License 机制、无功能开关）。 issues 反馈渠道由发布方提供。

@@ -129,6 +129,19 @@ The interactive plane runs on a LiveKit SFU (mic A/V + whiteboard data channel);
     [Install]
     WantedBy=multi-user.target
 
+## Third-party components & licenses
+
+CoStage CE is distributed as compiled artifacts only (see `LICENSE`). Attribution and full license texts
+for the bundled third-party components ship with every release:
+
+- `third-party/LICENSE.livekit.txt` + `third-party/NOTICE.livekit.txt` — **LiveKit server**, Apache-2.0
+  (Apache-2.0 §4(d) requires reproducing the upstream NOTICE on distribution)
+- `third-party/LICENSE.zlmediakit.txt` — **ZLMediaKit** (`MediaServer`), MIT
+- `third-party/LICENSE.tldraw.txt` — **tldraw** (whiteboard engine inside the panel / JS SDK),
+  **tldraw license**: ⚠ not open source — **production use requires a commercial license from tldraw Inc.**
+  (development/testing is permitted), and any distribution must carry the verbatim license text
+- Full component list (incl. Go/Pion/React dependencies) and details: **`THIRD-PARTY.md`** at the package root
+
 ## License & source
 
 Shipped as compiled artifacts only (no source, no License mechanism, no feature flags). Feedback channel is provided by the publisher.
