@@ -1,4 +1,4 @@
-# CoStage CE（Community Edition）v0.2.0
+# CoStage CE（Community Edition）v0.2.1
 
 通用实时直播/连麦/协同底座——首个场景：在线辅导课堂。单机 Docker 一键部署。
 
@@ -11,7 +11,7 @@
 - 观众无需账号：打开房间链接即看（老师画面 + 连麦画面 + 白板实时镜像），可发文字消息
 - 连麦画面以浮动小窗叠加在主画面上，可拖动、可与主画面交换；所有人看到的布局实时跟随老师
 
-## 功能（v0.2.0）
+## 功能（v0.2.1）
 
 - 实时音视频连麦（≤4 学生），15 秒断线保护
 - 内嵌 TURN 中继（可选）：跨网段/严格 NAT 时浏览器媒体中继，ICE 凭据自动签发（无需构建参数）
@@ -27,13 +27,13 @@
 
 | 文件 | 用途 |
 |---|---|
-| `costage-sdk-v0.2.0.min.js` | UMD 单文件（**混淆**），`<script src>` 直引 → 全局 `CoStageJS` |
-| `costage-sdk-v0.2.0.mjs` | ESM 版（**混淆**），供 vite/webpack 等打包器 `import` |
+| `costage-sdk-v0.2.1.min.js` | UMD 单文件（**混淆**），`<script src>` 直引 → 全局 `CoStageJS` |
+| `costage-sdk-v0.2.1.mjs` | ESM 版（**混淆**），供 vite/webpack 等打包器 `import` |
 | `types/**` | TypeScript 声明（未混淆，供编辑器补全） |
 | `README.md` | SDK 用法、终结点配置、拓扑 A/B 部署说明 |
 
 ```html
-<script src="/sdk/costage-sdk-v0.2.0.min.js"></script>
+<script src="/sdk/costage-sdk-v0.2.1.min.js"></script>
 <script>
   const ep = CoStageJS.resolveEndpoints({ rest: location.origin })   // 同源部署可省略
   CoStageJS.initAnonymousViewer({ roomId: 'r-<房主ID>', endpoints: ep, mount: document.body })
@@ -43,7 +43,12 @@
 > 也在 GitHub Release 提供独立资产 `co-stage-sdk-<ver>.zip`（仅 SDK，不必下载整包）。
 > 混淆档位见 `scripts/build-sdk-dist.sh`（关控制流扁平化/死代码注入/自我保护，保留字符串抽取）。
 
-## v0.2.0 已知边界
+## v0.2.1 修复
+
+- **域名 + TLS 部署下媒体全黑**：管理器渲染 ZLM `[rtc] externIP` 时误把域名写进 ICE 候选（必须是 IP），
+  导致 relaybot 开流失败、观看端收不到流。现取 `PublicIP`（IP 优先，其次 DNS 解析），解析不到则留空由 ZLM 自动取网卡 IP。
+
+## v0.2.1 已知边界
 
 1. **同时最多 1 个活跃房间**（服务端硬闸）：开新课须先结束当前房间
 2. 无观看准入：知道房间号即可观看（签名 URL/观看码/Webhook 后置版本提供）

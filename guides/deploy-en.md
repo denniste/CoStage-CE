@@ -1,4 +1,4 @@
-# CoStage CE (Community Edition) v0.2.0
+# CoStage CE (Community Edition) v0.2.1
 
 A general-purpose realtime live/interactive/collaboration foundation — first scenario: online tutoring classrooms. Single-host Docker deployment.
 
@@ -11,7 +11,7 @@ One class session looks like this: **1 teacher (host) + up to 4 students (mic pa
 - Audience needs no account: open the room link and watch (teacher + participants + live whiteboard mirror), text chat available
 - Participant videos float over the main video: draggable, swappable with the main slot; everyone's layout follows the teacher's in real time
 
-## Features (v0.2.0)
+## Features (v0.2.1)
 
 - Realtime A/V mic (up to 4 students) with 15-second disconnect protection
 - Collaborative whiteboard: teacher/students co-draw in real time; viewers/anonymous get a read-only live mirror; auto-recovery after disconnects
@@ -21,7 +21,7 @@ One class session looks like this: **1 teacher (host) + up to 4 students (mic pa
 - Mic whitelist: editable in-page by the host; whitelisted students hold participant status (may request the mic)
 - Distribution: per-track relay from SFU to ZLMediaKit; audience pulls native WebRTC (WHEP), zero transcoding
 
-## Known limitations (v0.2.0)
+## Known limitations (v0.2.1)
 
 1. **At most 1 active room at a time** (server-side hard gate): end the current room before starting a new class
 2. No access control: anyone with the room ID can watch (signed URLs / viewing codes / Webhook admission come in a later release)

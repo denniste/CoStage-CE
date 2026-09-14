@@ -1,4 +1,4 @@
-# CoStage CE (Community Edition) v0.2.0
+# CoStage CE (Community Edition) v0.2.1
 
 A general-purpose realtime live/interactive/collaboration foundation — first scenario: online tutoring classrooms. Single-host Docker deployment.
 
@@ -11,7 +11,7 @@ One class session looks like this: **1 teacher (host) + up to 4 students (mic pa
 - Audience needs no account: open the room link and watch (teacher + participants + live whiteboard mirror), text chat available
 - Participant videos float over the main video: draggable, swappable with the main slot; everyone's layout follows the teacher's in real time
 
-## Features (v0.2.0)
+## Features (v0.2.1)
 
 - Realtime A/V mic (up to 4 students) with 15-second disconnect protection
 - Embedded TURN relay (optional): browser media relay for cross-network / strict NAT; ICE credentials issued automatically (no build-time injection)
@@ -27,13 +27,13 @@ One class session looks like this: **1 teacher (host) + up to 4 students (mic pa
 
 | File | Purpose |
 |---|---|
-| `costage-sdk-v0.2.0.min.js` | UMD single file (**obfuscated**); load via `<script src>` → global `CoStageJS` |
-| `costage-sdk-v0.2.0.mjs` | ESM build (**obfuscated**) for bundlers (vite/webpack) |
+| `costage-sdk-v0.2.1.min.js` | UMD single file (**obfuscated**); load via `<script src>` → global `CoStageJS` |
+| `costage-sdk-v0.2.1.mjs` | ESM build (**obfuscated**) for bundlers (vite/webpack) |
 | `types/**` | TypeScript declarations (not obfuscated) |
 | `README.md` | SDK usage, endpoint config, topology A/B deployment notes |
 
 ```html
-<script src="/sdk/costage-sdk-v0.2.0.min.js"></script>
+<script src="/sdk/costage-sdk-v0.2.1.min.js"></script>
 <script>
   const ep = CoStageJS.resolveEndpoints({ rest: location.origin })   // omit for same-origin
   CoStageJS.initAnonymousViewer({ roomId: 'r-<hostID>', endpoints: ep, mount: document.body })
@@ -43,7 +43,14 @@ One class session looks like this: **1 teacher (host) + up to 4 students (mic pa
 > A standalone asset `co-stage-sdk-<ver>.zip` is also published on the GitHub Release.
 > Obfuscation profile: `scripts/build-sdk-dist.sh` (control-flow flattening, dead-code injection and self-defending disabled; string array kept).
 
-## Known limitations (v0.2.0)
+## Fixes in v0.2.1
+
+- **No media on domain + TLS deployments**: the manager rendered ZLM `[rtc] externIP` with the domain name,
+  which ZLM copies verbatim into ICE candidates (must be an IP) — the relay bot could not open the stream and
+  viewers got nothing. It now uses `PublicIP` (IP first, then DNS resolution) and falls back to empty so ZLM
+  picks the NIC address.
+
+## Known limitations (v0.2.1)
 
 1. **At most 1 active room at a time** (server-side hard gate): end the current room before starting a new class
 2. No access control: anyone with the room ID can watch (signed URLs / viewing codes / Webhook admission come in a later release)
