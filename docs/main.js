@@ -119,7 +119,7 @@ const CONTENT = {
     deploy: {
       steps: [
         { title: 'Install Node.js 18+', desc: 'The only runtime the manager needs. Zero npm dependencies — pure standard library.', code: 'apt install nodejs' },
-        { title: 'Extract the CE release', desc: 'The tar ships the four service binaries, the panel, and manager.js side by side.', code: 'tar -xzf co-stage-ce-v0.1.0-linux-amd64.tar.gz' },
+        { title: 'Extract the CE release', desc: 'The tar ships the service binaries, the panel and the JavaScript SDK side by side.', code: 'tar -xzf co-stage-ce-v0.2.0-linux-amd64.tar.gz' },
         { title: 'Start the manager', desc: 'Binds loopback by default; reach it over an SSH tunnel from your workstation.', code: 'node manager.js --dir /opt/costage' },
         { title: 'Run the browser wizard', desc: 'Public IP, ports, auto-generated LiveKit / ZLM secrets, optional TURN — with port preflight checks.', code: 'http://127.0.0.1:8900' },
         { title: 'Health-gated install', desc: 'Renders configs from a single source of truth, starts zlm → livekit → server → relaybot, waits for green health checks.', code: 'render → start → health' },
@@ -127,7 +127,7 @@ const CONTENT = {
       ],
       term: [
         { cls: 'p', text: '$ ' }, { cls: 'cmd', text: 'node manager.js --dir /opt/costage --addr 127.0.0.1:8900' }, { cls: '', text: '\n' },
-        { cls: 'out', text: '[manager] CoStage deployment manager v0.1.0' }, { cls: '', text: '\n' },
+        { cls: 'out', text: '[manager] CoStage deployment manager v0.2.0' }, { cls: '', text: '\n' },
         { cls: 'out', text: '[manager] listening on http://127.0.0.1:8900 (dir /opt/costage)' }, { cls: '', text: '\n\n' },
         { cls: 'out', text: '# wizard submitted → installing…' }, { cls: '', text: '\n' },
         { cls: 'hi', text: '[render ]' }, { cls: 'out', text: ' configs/config.ini, configs/livekit.yaml (secrets auto-generated)' }, { cls: '', text: '\n' },
@@ -211,7 +211,7 @@ const CONTENT = {
     deploy: {
       steps: [
         { title: '安装 Node.js 18+', desc: '管理器唯一依赖的运行时。零 npm 依赖——纯标准库实现。', code: 'apt install nodejs' },
-        { title: '解压 CE 发布包', desc: 'tar 包内含四个服务二进制、面板与管理器 manager.js。', code: 'tar -xzf co-stage-ce-v0.1.0-linux-amd64.tar.gz' },
+        { title: '解压 CE 发布包', desc: 'tar 包内含服务二进制、面板与 JavaScript SDK。', code: 'tar -xzf co-stage-ce-v0.2.0-linux-amd64.tar.gz' },
         { title: '启动管理器', desc: '默认仅绑回环地址；通过 SSH 隧道从本机浏览器访问。', code: 'node manager.js --dir /opt/costage' },
         { title: '运行浏览器向导', desc: '公网 IP、端口、自动生成 LiveKit / ZLM 密钥、可选 TURN——全程端口预检。', code: 'http://127.0.0.1:8900' },
         { title: '健康门控安装', desc: '从单一事实源渲染配置，依序拉起 zlm → livekit → server → relaybot，等待健康检查全绿。', code: 'render → start → health' },
@@ -219,7 +219,7 @@ const CONTENT = {
       ],
       term: [
         { cls: 'p', text: '$ ' }, { cls: 'cmd', text: 'node manager.js --dir /opt/costage --addr 127.0.0.1:8900' }, { cls: '', text: '\n' },
-        { cls: 'out', text: '[manager] CoStage deployment manager v0.1.0' }, { cls: '', text: '\n' },
+        { cls: 'out', text: '[manager] CoStage deployment manager v0.2.0' }, { cls: '', text: '\n' },
         { cls: 'out', text: '[manager] listening on http://127.0.0.1:8900 (dir /opt/costage)' }, { cls: '', text: '\n\n' },
         { cls: 'out', text: '# 向导提交 → 安装中…' }, { cls: '', text: '\n' },
         { cls: 'hi', text: '[render ]' }, { cls: 'out', text: ' configs/config.ini, configs/livekit.yaml（密钥自动生成）' }, { cls: '', text: '\n' },

@@ -4,7 +4,8 @@
 > 契约源头：CoStage 主仓 `server/costage-server-api-request.md` §4.1/§4.4（能力评估）
 > 与 `server/costage-server-api-implementation-plan.md`（施工方案）。
 > 本文面向**业务系统开发者**：接 CoStage 当执行层，需要实现什么、调用什么、怎么验收。
-> 更新日期：2026-09-12，对齐 CoStage HEAD `5811ad7`（含 SPA trusted 交接入口）。
+> 更新日期：2026-09-14（§8 增补 **Mode 2 内嵌形态**：demo 用 CoStage web-sdk 在商城自己的
+> 页面里开播/观看，已落地）；其余内容对齐 CoStage HEAD `5811ad7`。
 > 配套演示：`demo/` 已升级为**惠民超市**（完整超市电商），本文 §8 为其商品直播实战。
 
 ---
@@ -95,7 +96,7 @@ X-CoStage-Signature: sha256=<hex(HMAC-SHA256(secret, "<timestamp>.<raw body>"))>
 
 ### 参考实现
 
-本仓 `demo/liveops/services.py`：`verify_signature()`（签名/时间戳）与
+本仓 `demo/supermarket/livegate.py`：`verify_signature()`（签名/时间戳）与
 `decide()`（演示规则集）——生产系统可按语言等价移植，签名算法 10 行。
 
 ## 4. 撤权 API（业务系统 → CoStage）
@@ -177,13 +178,20 @@ CoStage 带第 2 节 env 重启。种子映射：admin(uid=1)=教师、user01-04
   戳按 userId 而非票校验）。生产接入建议：P1 增加 un-revoke 端点，或把戳 TTL 与业务
   封禁审核周期对齐调短（`RevokeUser` 的 ttl 参数已可配）。
 
-## 8. 惠民超市实战（demo/，Mode 1：独立应用 + 用户同步 + JWT 跳转）
+## 8. 惠民超市实战（demo/，Mode 2 内嵌 + Mode 1 备用）
 
-> 集成形态定稿（2026-09-12）：CoStage 是**独立完整的直播应用**，自带 SPA 独立入口
-> （生产=live.example.com 一类独立域名/vhost），业务系统**不承载、不改写、不代理**
-> CoStage 的任何页面。集成只走三件事：①api_key 管理面同步用户；②决策端点裁决；
-> ③需要直播时换 JWT 跳转到 CoStage 入口。前端的深度定制路线见
-> [`costage-js-library-design.md`](costage-js-library-design.md)（Mode 2，JS library，待立项）。
+> 集成形态（2026-09-14 定版）：**默认 Mode 2 内嵌**——CoStage 的客户端内核以
+> `@costage/web-sdk` release 形态给业务系统，商城用 `CoStageJS.initRoomMaster` /
+> `initAnonymousViewer` 在**自己的页面**里开播与观看（页面/样式/商品联动全归商城）；
+> CoStage 应用本身仍是独立完整应用（生产=live.example.com 一类独立域名/vhost），
+> 业务系统**不承载、不改写、不代理**它的任何页面，只是恰好不再需要跳过去。
+> 界面必须与官方 SPA 完全一致、或需要连麦人端等完整功能时，用 **Mode 1 跳转**
+> （换 JWT + `#sso=` 交接，见下）。
+
+三个集成面（两种形态共用）：
+1. **用户同步**：api_key 管理面 `PUT /api/v1/service/users/mall-<id>`；
+2. **决策端点**：`POST /biz/v1/decide`（超市实现，CoStage 出站询问）；
+3. **客户端**：Mode 2 = 后端换票 + web-sdk 内嵌；Mode 1 = 后端换票 + 跳转。
 
 用户同步（api_key 管理面，超市场景）：
 - 顾客注册 → `PUT /api/v1/service/users/mall-<id>`（canLive=false，role=guest）
@@ -197,58 +205,96 @@ CoStage 带第 2 节 env 重启。种子映射：admin(uid=1)=教师、user01-04
 
 | 入口 | 反代目标 | 用途 | 生产对应 |
 |---|---|---|---|
-| https://192.168.31.2/ （443） | 7860 | CoStage 独立应用（SPA+API+WS） | live.example.com |
-| https://192.168.31.2:82/ | 7990 | 惠民超市（商城+后台+决策端点） | shop.example.com |
+| https://192.168.31.2/ （443） | 7860 | CoStage 独立应用（SPA+API+WS+WHEP） | live.example.com |
+| https://192.168.31.2:82/ | 7990 | 惠民超市（商城+后台+决策端点+**内嵌直播间**） | shop.example.com |
 
-## 8.2 惠民超市实战细节（方案 A：trusted 换票）
+**跨源是默认形态**：内嵌直播间在商城页面里直连 CoStage（`rest/ws/media` 三基址，缺省派生自
+`COSTAGE_ENTRY_URL`），所以 CoStage 侧必须放行商城域：
+`COSTAGE_CORS_ORIGINS='https://<商城域>'`（含端口；覆盖 `/api/*` 与 OPTIONS 预检）。
+少了它 REST 会被浏览器拦下、页面表现为「连不上」，且控制台只有 CORS 报错。
+`ws` 不受 CORS 约束（CheckOrigin 恒放行），WHEP 跨源由 ZLM `allow_cross_domains=1` 处理。
+
+## 8.2 惠民超市实战细节
 
 业务系统 = 一家单店超市（顾客商城 + 员工后台），接入 CoStage 做**商品直播**：
 店员开播卖货，顾客/匿名观看。
 
-### 8.1 身份：店员换票（CoStage 侧需 trusted 模式）
+### 8.2.1 内嵌形态（Mode 2，默认）：商城自己的直播间
 
 ```
-店员点后台「开播卖货」
-  └► 超市后端 POST /api/v1/auth/exchange
-     body: {userId:"x-trusted-<工号>", displayName:"店员花名", role:"teacher",
-            ts:<unix秒>, nonce:<uuid>, sig:hex(HMAC-SHA256(TRUSTED_SECRET,
-            "v1|x-trusted-<工号>|teacher|<ts>|<nonce>"))}
-  └► 200 {accessToken, refreshToken, user{...}}（CoStage 自动开户，角色钳 teacher）
-  └► 302 跳转 https://<CoStage入口>/#sso=<access>&rst=<refresh>&u=<b64url(user)>
-       SPA 启动时写票进 localStorage 并清 hash（CoStage web ssoIntake，HEAD 5811ad7）→ 已登录
-  └► 店员在 CoStage「我的房间」开播（房间号 = r-x-trusted-<工号>）
+店员后台「● 开播卖货」→ 商城 /staff/live/（开播台）
+  └► 页面取 /staff/live/session/（GET，同源带会话 Cookie）
+     └► 超市后端 POST /api/v1/auth/exchange（HMAC，见 8.2.2）
+     └► 返回 {token, userId(数字 uid), roomId=r-<uid>, displayName, endpoints}
+  └► 浏览器 CoStageJS.initRoomMaster({endpoints, token, userId, roomId})
+     └► join()（房不存在自动建房；建房前服务端问 live.create）
+     └► 点「开始直播」→ publishAv()（未点绝不推流）
+     └► attachRoomMasterVideo / attachWhiteBoard + 控制面（匿名开关/连麦审批/踢人/禁言/结束）
+
+顾客（含匿名）→ 商城 /live/<roomId>/
+  └► CoStageJS.initAnonymousViewer({endpoints, roomId, mount, board})
+     └► SDK 自取 anon-token → 5s 快照 → WHEP 分轨拉流 + 只读白板/消息
+     └► 房主设私密（accessMode=private）→ SDK 自动清屏，恢复公开自动回放
+```
+
+商城侧只做三件事：①后端换票；②页面挂载 SDK 并把 `endpoints` 注入
+`window.__COSTAGE_ENDPOINTS__`；③把 CoStage 返回的房间信息（分类）对接自己的商品数据
+（「边看边买」侧栏）。**直播间 UI 完全由商城掌控**，SDK 只提供 `costage-` 前缀默认皮肤。
+
+依赖 release 产物：`@costage/web-sdk` 的 `dist/` 由
+`demo/scripts/sync-web-sdk.sh` 同步到商城静态目录（UMD 单文件含 React/tldraw/livekit，
+宿主零构建依赖）。产物不进 git（CE 铁律），`run.sh` 缺产物时自动同步。
+
+### 8.2.2 身份：店员换票（CoStage 侧需 trusted 模式）
+
+```
+超市后端 POST /api/v1/auth/exchange
+   body: {userId:"mall-<工号>", displayName:"店员花名", role:"teacher",
+          ts:<unix秒>, nonce:<uuid>, sig:hex(HMAC-SHA256(TRUSTED_SECRET,
+          "v1|mall-<工号>|teacher|<ts>|<nonce>"))}
+   └► 200 {accessToken, refreshToken, user{...}}（CoStage 自动开户，角色钳 teacher）
+   └► Mode 2：票交给页面 initRoomMaster（**不落 HTML**，页面按需现取）
+   └► Mode 1（备用，/staff/live/start/）：302 跳 https://<CoStage入口>/#sso=<access>&rst=<refresh>&u=<b64url(user)>
+        SPA 启动时写票进 localStorage 并清 hash（CoStage web ssoIntake，HEAD 5811ad7）→ 已登录
 ```
 
 要点：nonce 一次性（CoStage Redis NX 防重放）；ts 偏差 ±30s 内；role 必须在
 `COSTAGE_TRUSTED_ROLES` 白名单内否则被钳成 guest；**超市不存任何 CoStage 口令**。
+超市把换票响应的数字 uid 回填 `Profile.co_stage_uid` —— 决策请求携带的是这个 uid，
+直播发现也按它过滤（external_id 只出现在换票请求里，目录里没有）。
 
-### 8.2 规则：决策裁决（demo/supermarket/livegate.py）
+### 8.3 规则：决策裁决（demo/supermarket/livegate.py）
 
 | 动作 | 规则 |
 |---|---|
-| `live.create` / `mic.apply` / `mic.ready` | 仅员工（x-trusted-* 且角色∈店员/经理） |
+| `live.create` / `mic.apply` / `mic.ready` | 仅员工（数字 uid 映射到超市员工档案） |
 | `mic.accept` | 操作者是员工，且**被批准者**也须是员工 |
 | `room.join` | 一律放行（顾客 60s 缓存；匿名/未登记者归 CoStage accessMode 管辖） |
 
-### 8.3 观看：直播间发现（列表页 + 分类角标 + 商品页横幅）
+### 8.4 观看：直播间发现（列表页 + 分类角标 + 商品页横幅）
 
-数据源就是 CoStage 既有的匿名目录 API `GET /api/rooms`（超市侧过滤 `hostId` 以
-`mall-` 开头且 `state=live` 的房间——本店店员的房）。三个触点：
+数据源就是 CoStage 既有的匿名目录 API `GET /api/rooms`（超市侧按 `Profile.co_stage_uid`
+过滤本店员工的房、`state=live`）。三个触点：
 
 1. **「直播间」列表页** `/live/`：全部直播中房间（缩略图=LIVE 徽标+CoStage 房间截图
-   `GET /api/rooms/{id}/thumb`，分类筛选），点击跳 CoStage 房间页（无票=匿名观看流）；
+   `GET /api/rooms/{id}/thumb`，缩略图直链必须带浏览器侧 rest 前缀；分类筛选），
+   点击进**商城自己的**观看页 `/live/<roomId>/`；
 2. **首页**：直播中条（各房直达）+ 分类 chip 上的红色 `●N` 直播角标；
 3. **商品详情页**：同分类有直播时显示「该分类正在直播 · 边看边买」横幅。
 
 **分类联动规则**：CoStage 房间的 `category` 字符串 == 超市分类名 即匹配。
 超市经 `PUT /api/v1/service/categories` 把 CoStage 分类表替换为自己的商品分类名
-（demo 已做：7 个分类已对齐），店员开播后在 CoStage 房间设置里选对应分类即可。
+（demo 已做：7 个分类已对齐），店员在开播台（或 CoStage 房间设置）选对应分类即可 ——
+观看页据 SDK `onInfo` 报来的分类，实时把侧栏换成同分类在售商品。
 分类与商品页的对应关系由超市侧维护，CoStage 不感知商品域。
 
-### 8.4 演示走查
+### 8.5 演示走查
 
-1. `staff01 / staff123456` 登录超市后台 → 「● 开播卖货」→ 落地 CoStage 已是
-   `店员·staff01`（右侧 my 显示花名）→ 开播
-2. 商城首页出现「直播中 · 店员·staff01 的直播间」→ 无痕窗口点进去匿名看
-3. CoStage 侧把房设私密 → 匿名端清屏（accessMode 语义照旧）
-4. BizHub 决策日志可见每次 live.create/room.join 询问
+1. `staff01 / staff123456` 登录超市后台 →「● 开播卖货」→ **商城自己的开播台**
+   （`/staff/live/`：状态胶囊 + 本机画面 + 房间资料）→ 填展示名、选分类 → 「开始直播」
+2. 商城首页出现「直播中 · 店员·staff01」→ 点进 `/live/<roomId>/`（无痕窗口 = 匿名）看画面/白板/消息
+3. 开播台「匿名观看：已关闭」→ 顾客端清屏「主播暂未开放观看」；重新开放 → 自动恢复
+4. 开播台「结束房间」→ 顾客端顶部转为「直播已结束」
+5. BizHub 决策日志可见每次 live.create/room.join 询问；拒绝时前端直显业务 reason
+6. 可选回归：`node scripts/smoke-live.cjs http://127.0.0.1:7990 r-<roomId>`
+   （观看端真实数据面 + 开播台控制面接线）

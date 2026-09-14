@@ -1,6 +1,6 @@
 # CoStage CE
 
-**Realtime interactive live & collaboration foundation — Community Edition v0.1.1**
+**Realtime interactive live & collaboration foundation — Community Edition v0.2.0**
 
 An open-architecture realtime live, mic-interaction and collaboration foundation
 (first scenario: online tutoring classrooms). One host, up to 4 on-mic participants,
@@ -17,7 +17,7 @@ unlimited viewers — self-hosted on a single Linux box.
 - **Viewers / anonymous** open the room link and watch instantly — a live mirror of the
   host's layout with sub-second WHEP streams, read-only whiteboard, and text chat.
 
-## Highlights (v0.1.1)
+## Highlights (v0.2.0)
 
 - LiveKit SFU interaction plane + ZLMediaKit WHEP mass distribution, **zero transcoding**
   (per-identity WHIP relay, H264/opus passthrough)
@@ -28,8 +28,9 @@ unlimited viewers — self-hosted on a single Linux box.
 - Fixed quality tiers: 480p30 / 720p30 / 1080p30 / 1080p60
 - Web deployment manager: install wizard, lifecycle, upgrade, rollback — no systemd,
   no container runtime required
+- **JavaScript SDK** (asset `sdk/`): obfuscated single-file `costage-sdk-<ver>.min.js` exposes the `CoStageJS` global from one `<script>` tag, plus an ESM build and TypeScript types — embed live A/V, mic-up and whiteboard into third-party apps with zero dependencies
 
-## Known boundaries (v0.1.1)
+## Known boundaries (v0.2.0)
 
 1. **At most 1 active room at a time** (server-side hard gate): end the current room
    before starting a new class
