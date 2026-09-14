@@ -1,6 +1,6 @@
 # CoStage CE
 
-**Realtime interactive live & collaboration foundation — Community Edition v0.2.1**
+**Realtime interactive live & collaboration foundation — Community Edition v0.2.2**
 
 An open-architecture realtime live, mic-interaction and collaboration foundation
 (first scenario: online tutoring classrooms). One host, up to 4 on-mic participants,
@@ -17,7 +17,7 @@ unlimited viewers — self-hosted on a single Linux box.
 - **Viewers / anonymous** open the room link and watch instantly — a live mirror of the
   host's layout with sub-second WHEP streams, read-only whiteboard, and text chat.
 
-## Highlights (v0.2.1)
+## Highlights (v0.2.2)
 
 - LiveKit SFU interaction plane + ZLMediaKit WHEP mass distribution, **zero transcoding**
   (per-identity WHIP relay, H264/opus passthrough)
@@ -30,14 +30,20 @@ unlimited viewers — self-hosted on a single Linux box.
   no container runtime required
 - **JavaScript SDK** (asset `sdk/`): obfuscated single-file `costage-sdk-<ver>.min.js` exposes the `CoStageJS` global from one `<script>` tag, plus an ESM build and TypeScript types — embed live A/V, mic-up and whiteboard into third-party apps with zero dependencies
 
-## Fixes in v0.2.1
+## Fixes in v0.2.2
 
 - **No media on domain + TLS deployments**: the manager rendered ZLM `[rtc] externIP` with the domain name,
   which ZLM copies verbatim into ICE candidates (must be an IP) - the relay bot could not open the stream and
   viewers got nothing. It now uses `PublicIP` (IP first, then DNS resolution) and falls back to empty so ZLM
   picks the NIC address.
 
-## Known boundaries (v0.2.1)
+## Changes in v0.2.2
+
+- **Licensing compliance**: the release ships `THIRD-PARTY.md` plus `third-party/NOTICE.livekit.txt`
+  (Apache-2.0 §4(d) requires reproducing the upstream NOTICE) and `third-party/LICENSE.tldraw.txt`
+  (tldraw license text; production use requires a commercial licence).
+
+## Known boundaries (v0.2.2)
 
 1. **At most 1 active room at a time** (server-side hard gate): end the current room
    before starting a new class
