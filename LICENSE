@@ -1,28 +1,34 @@
-CoStage CE — Community Edition
+CoStage Community Edition — distribution repository
+CoStage 社区版 —— 分发仓库
 
-Copyright (c) 2026 CoStage authors. All rights reserved.
+Copyright 2026 CoStage authors
 
-This repository is NOT open source.
+1. This repository contains COMPILED ARTIFACTS and documentation only (no source code).
+   The artifacts are builds of the CoStage project, which is licensed under the
+   Apache License 2.0 — see https://github.com/denniste/CoStage (LICENSE, NOTICE).
 
-It is published for distribution of compiled artifacts (binaries), deployment
-assets, documentation and the project website only. No source code is provided
-here, and no license is granted to use, copy, modify, merge, publish,
-distribute, sublicense, or sell any source code of CoStage.
+   The compiled artifacts distributed here are therefore covered by the Apache
+   License 2.0. You may use, copy, modify and redistribute them under its terms,
+   provided you keep LICENSE, NOTICE and THIRD-PARTY.md intact.
 
-You may:
-  - download and run the compiled release artifacts attached to Releases;
-  - read, copy and redistribute the documentation in this repository;
-  - deploy the stack using the assets under deploy/ on your own machines.
+   本仓仅含**编译产物**与文档（不含源码）。产物由 Apache-2.0 许可的 CoStage 项目构建
+   （源码：https://github.com/denniste/CoStage）。你可按 Apache-2.0 使用、复制、修改与再分发，
+   但须保留 LICENSE、NOTICE 与 THIRD-PARTY.md。
 
-You may NOT:
-  - decompile, reverse engineer or disassemble the distributed binaries,
-    except where such restriction is prohibited by applicable law;
-  - represent the compiled artifacts as open-source software.
+2. THIRD-PARTY COMPONENTS. The artifacts bundle or link third-party software with their
+   own terms (LiveKit — Apache-2.0 with NOTICE; ZLMediaKit — MIT; tldraw — tldraw license).
+   See THIRD-PARTY.md in this repository and third-party/ inside each release.
+   ⚠ Releases up to and including v0.2.2 include tldraw, whose license forbids production
+   environments without a commercial licence from tldraw Inc.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+   第三方组件各有其条款（LiveKit/Apache-2.0+NOTICE、ZLMediaKit/MIT、tldraw/tldraw license）。
+   ⚠ 截至 v0.2.2 的产物含 tldraw：未经 tldraw Inc. 商业许可不得用于生产环境。
+
+3. TRADEMARKS. The name "CoStage", the logo and the official domains are not licensed;
+   redistributions must not imply official origin or endorsement. See TRADEMARKS.md in the
+   source repository.
+
+   名称「CoStage」、标识与官方域名不在授权范围内；再分发不得暗示官方来源或背书。
+
+4. NO WARRANTY. Artifacts are provided "AS IS", without warranties or conditions of any
+   kind, as set out in the Apache License 2.0.
