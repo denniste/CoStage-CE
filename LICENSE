@@ -4,16 +4,20 @@ CoStage 社区版 —— 分发仓库
 Copyright 2026 CoStage authors
 
 1. This repository contains COMPILED ARTIFACTS and documentation only (no source code).
-   The artifacts are builds of the CoStage project, which is licensed under the
-   Apache License 2.0 — see https://github.com/denniste/CoStage (LICENSE, NOTICE).
+   The artifacts are builds of the CoStage project. The CoStage PLATFORM is licensed under
+   the Apache License 2.0 (LICENSE, NOTICE in the source repository). The project as a whole
+   is an OPEN-CORE project: its whiteboard module integrates the source-available tldraw
+   engine, which is not open source — so the project must not be described as "open source"
+   until that engine is replaced (see LICENSING.md in the source repository).
 
    The compiled artifacts distributed here are therefore covered by the Apache
    License 2.0. You may use, copy, modify and redistribute them under its terms,
    provided you keep LICENSE, NOTICE and THIRD-PARTY.md intact.
 
-   本仓仅含**编译产物**与文档（不含源码）。产物由 Apache-2.0 许可的 CoStage 项目构建
-   （源码：https://github.com/denniste/CoStage）。你可按 Apache-2.0 使用、复制、修改与再分发，
-   但须保留 LICENSE、NOTICE 与 THIRD-PARTY.md。
+   本仓仅含**编译产物**与文档（不含源码）。CoStage **平台**代码以 Apache-2.0 授权
+   （见源码仓的 LICENSE/NOTICE）。项目整体是 **open core**：白板模块集成 source-available 的
+   tldraw 引擎（非开源），因此在替换完成前**不应把本项目称为「开源」**（见源码仓 LICENSING.md）。
+   你可按 Apache-2.0 使用、复制、修改与再分发（平台部分），但须保留 LICENSE、NOTICE 与 THIRD-PARTY.md。
 
 2. THIRD-PARTY COMPONENTS. The artifacts bundle or link third-party software with their
    own terms (LiveKit — Apache-2.0 with NOTICE; ZLMediaKit — MIT; tldraw — tldraw license).
