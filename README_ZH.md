@@ -48,6 +48,15 @@
 
 > 除「1 个房间 + 无录制回看」两项外，CE 与完整版功能一致；后续新增功能不再做 CE 裁剪。
 
+## 官方声明 / Official notice
+
+- **不提供合成媒体功能**：CoStage 不提供、也不会添加任何合成真人声音、面容或形象的功能（不做换脸、换声、
+  数字人、实时形象替换）。AI 仅用于辅助教学：字幕、翻译、转写、无障碍。
+- **禁止用途**：冒充他人、合成声音/面容、诈骗、未经同意录制、未成年人有害内容。完整政策见源码仓
+  `docs/ACCEPTABLE-USE.md`；**举报请发 abuse@costage.dev**。
+- **官方渠道唯一**：`www.costage.dev`、`demo.costage.dev`、`github.com/denniste/CoStage-CE`。
+  其他以 CoStage 名义提供的服务与我们无关，发现冒用请告知。
+
 ## 源码与订阅 / Source & subscription
 
 - **二进制免费**：本仓只发布编译产物，任何人可下载使用。

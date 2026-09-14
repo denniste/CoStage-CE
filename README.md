@@ -57,6 +57,16 @@ unlimited viewers — self-hosted on a single Linux box.
 > Beyond "1 active room" and "no recording/playback", CE is functionally identical to
 > the full edition; future features will not be trimmed from CE.
 
+## Official notice / 官方声明
+
+- **No synthetic media**: CoStage does not provide — and will never add — synthetic human voice, face or avatar
+  features (no face swap, no voice cloning, no digital humans, no real-time identity substitution). AI is limited
+  to assistive teaching: captions, translation, transcription, accessibility.
+- **Prohibited uses**: impersonation, synthetic voice/face, fraud and scams, non-consensual recording, harm to
+  minors. Full policy in `docs/ACCEPTABLE-USE.md` of the source repository; **report abuse to abuse@costage.dev**.
+- **Official channels only**: `www.costage.dev`, `demo.costage.dev`, `github.com/denniste/CoStage-CE`.
+  Services using the CoStage name elsewhere are not ours — please report impersonation.
+
 ## Source & subscription / 源码与订阅
 
 - **Binaries are free** for anyone (this repository ships artifacts only).
