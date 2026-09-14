@@ -57,6 +57,23 @@ unlimited viewers — self-hosted on a single Linux box.
 > Beyond "1 active room" and "no recording/playback", CE is functionally identical to
 > the full edition; future features will not be trimmed from CE.
 
+## Source & subscription / 源码与订阅
+
+- **Binaries are free** for anyone (this repository ships artifacts only).
+- **Source**: the full engineering source is **MIT-licensed** and delivered to **subscribers** through a
+  private repository — commit history, build scripts, tests, design docs and every subsequent iteration.
+  *Source available to subscribers.*
+- **Subscriber benefits**: private-repo read access · every new version · **priority issue handling** and
+  feature voting · design/engineering notes · support channel.
+- **Versioning**: each `vX.Y.Z` tag here corresponds to the same tag in the source repository; CE builds are
+  produced with `-tags ce`.
+- **Verify a download**: `SHA256SUMS-<ver>.txt` is attached to every release; binaries embed their build
+  revision (`go version -m costage-server | grep vcs.revision`).
+- ⚠ **Not open source**: the source is not publicly distributed (does not meet the OSI definition). Please
+  describe the project as a *free binary distribution with MIT-licensed source for subscribers*.
+- ⚠ **Whiteboard engine**: the bundled tldraw engine is **not** MIT and must not be used in production
+  without a commercial licence from tldraw Inc.; a self-developed engine is replacing it.
+
 ## Deploy
 
 Two ways, both documented:

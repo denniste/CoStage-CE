@@ -1,38 +1,32 @@
-CoStage Community Edition — distribution repository
-CoStage 社区版 —— 分发仓库
+CoStage Community Edition — distribution repository / 社区版分发仓库
+Copyright (c) 2026 CoStage authors
 
-Copyright 2026 CoStage authors
+1. FREE BINARY DISTRIBUTION / 免费二进制发行版
+   This repository publishes COMPILED ARTIFACTS and documentation only — it contains no source code.
+   The binaries are free to download and use. 本仓仅发布编译产物与文档，不含源码；二进制免费使用。
 
-1. This repository contains COMPILED ARTIFACTS and documentation only (no source code).
-   The artifacts are builds of the CoStage project. The CoStage PLATFORM is licensed under
-   the Apache License 2.0 (LICENSE, NOTICE in the source repository). The project as a whole
-   is an OPEN-CORE project: its whiteboard module integrates the source-available tldraw
-   engine, which is not open source — so the project must not be described as "open source"
-   until that engine is replaced (see LICENSING.md in the source repository).
+2. SOURCE CODE / 源码
+   The complete engineering source is licensed under the MIT License and is delivered to SUBSCRIBERS
+   through a private repository (read-only access), together with commit history, build scripts, tests
+   and design documents. 完整工程源码以 MIT 许可发布，仅对订阅用户通过私有仓库（只读）提供。
 
-   The compiled artifacts distributed here are therefore covered by the Apache
-   License 2.0. You may use, copy, modify and redistribute them under its terms,
-   provided you keep LICENSE, NOTICE and THIRD-PARTY.md intact.
+3. REDISTRIBUTION / 再分发
+   You may redistribute these binaries, provided that you keep LICENSE, NOTICE, THIRD-PARTY.md and the
+   third-party/ licence texts intact, do not remove attributions, and do not imply official origin or
+   endorsement (see TRADEMARKS.md). 再分发须保留上述文件与署名，且不得暗示官方来源或背书。
 
-   本仓仅含**编译产物**与文档（不含源码）。CoStage **平台**代码以 Apache-2.0 授权
-   （见源码仓的 LICENSE/NOTICE）。项目整体是 **open core**：白板模块集成 source-available 的
-   tldraw 引擎（非开源），因此在替换完成前**不应把本项目称为「开源」**（见源码仓 LICENSING.md）。
-   你可按 Apache-2.0 使用、复制、修改与再分发（平台部分），但须保留 LICENSE、NOTICE 与 THIRD-PARTY.md。
+4. THIRD-PARTY COMPONENTS / 第三方组件
+   LiveKit server — Apache-2.0 (upstream NOTICE reproduced in third-party/NOTICE.livekit.txt);
+   ZLMediaKit (MediaServer) — MIT; HashiCorp libraries — MPL-2.0 (source pointers in
+   third-party/MPL-2.0-sources.txt); tldraw whiteboard engine — tldraw license, which is NOT open source
+   and requires a commercial licence for production use.
+   ⚠ Releases up to and including v0.2.2 include tldraw; 未经 tldraw Inc. 商业许可不得用于生产环境。
 
-2. THIRD-PARTY COMPONENTS. The artifacts bundle or link third-party software with their
-   own terms (LiveKit — Apache-2.0 with NOTICE; ZLMediaKit — MIT; tldraw — tldraw license).
-   See THIRD-PARTY.md in this repository and third-party/ inside each release.
-   ⚠ Releases up to and including v0.2.2 include tldraw, whose license forbids production
-   environments without a commercial licence from tldraw Inc.
+5. NOT OPEN SOURCE / 非开源
+   Neither this repository nor the project is open source: the source is not publicly distributed, which
+   does not meet the OSI definition. Do not describe them as "open source". Correct wording: a free binary
+   distribution whose MIT-licensed source is available to subscribers.
+   本仓与项目均非开源（源码不公开分发，不满足 OSI 定义），不得以「开源」宣传。
 
-   第三方组件各有其条款（LiveKit/Apache-2.0+NOTICE、ZLMediaKit/MIT、tldraw/tldraw license）。
-   ⚠ 截至 v0.2.2 的产物含 tldraw：未经 tldraw Inc. 商业许可不得用于生产环境。
-
-3. TRADEMARKS. The name "CoStage", the logo and the official domains are not licensed;
-   redistributions must not imply official origin or endorsement. See TRADEMARKS.md in the
-   source repository.
-
-   名称「CoStage」、标识与官方域名不在授权范围内；再分发不得暗示官方来源或背书。
-
-4. NO WARRANTY. Artifacts are provided "AS IS", without warranties or conditions of any
-   kind, as set out in the Apache License 2.0.
+6. NO WARRANTY
+   Artifacts are provided "AS IS", without warranty of any kind, as set out in the MIT License.
